@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+    cookbook:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        ports:
+            - 5433:5432
+    pgadmin:
+        image: dpage/pgadmin4:latest
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+            PGADMIN_LISTEN_PORT: 5051
+        ports:
+            - 5051:5051
+        volumes:
+            - pgadmin:/var/lib/pgadmin
+        depends_on:
+            - cookbook
+
+volumes:
+    postgres:
+    pgadmin:
