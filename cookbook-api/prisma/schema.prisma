@@ -8,7 +8,7 @@ datasource db {
 }
 
 model categories {
-  categoryId Int       @id @default(autoincrement()) @map("category_id")
+  categoryId  Int       @id @default(autoincrement()) @map("category_id")
   name        String
   recipes     recipes[]
 }
