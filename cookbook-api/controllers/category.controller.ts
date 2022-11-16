@@ -16,31 +16,31 @@ module.exports = app => {
     // Retrieve all Category
     app.get('/categories', async (req, res) => {
 
-      const categories = await prisma.categories.findMany()
+      const result = await prisma.categories.findMany()
 
-      res.json(categories)
+      res.json(result)
     })
   
     // Update a Category with id
     app.put('/updateCategory/:id', async (req, res) => {
       const { id } = req.params
       const { name } = req.body
-      const category = await prisma.categories.update({
+      const result = await prisma.categories.update({
         where: { categoryId: Number(id) },
         data: { name: name },
       })
-      res.json(category)
+      res.json(result)
     })
   
     // Delete a Category with id
     app.delete(`/deleteCategory/:id`, async (req, res) => {
       const { id } = req.params
-      const category = await prisma.categories.delete({
+      const result = await prisma.categories.delete({
         where: {
           categoryId: Number(id),
         },
       })
-      res.json(category)
+      res.json(result)
     })
     
   };
