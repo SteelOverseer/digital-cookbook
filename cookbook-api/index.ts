@@ -1,8 +1,12 @@
 import express from 'express'
 
 const app = express()
+const cors = require("cors");
 
 app.use(express.json())
+app.use(cors({
+    origin: '*',
+  }))
 
 require("./controllers/category.controller")(app);
 require("./controllers/recipe.controller")(app);
