@@ -1,16 +1,12 @@
-mod handler;
-mod model;
-mod schema;
-
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{http::header, web, App, HttpServer};
+use cookbook_api::models::AppState;
+use cookbook_api::routes::{
+    health_check, get_categories, create_category, get_category, edit_category, delete_category
+};
 use dotenv::dotenv;
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-
-pub struct AppState {
-    db: Pool<Postgres>,
-}
+use sqlx::postgres::PgPoolOptions;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -39,20 +35,26 @@ async fn main() -> std::io::Result<()> {
     println!("🚀 Server started successfully");
 
     HttpServer::new(move || {
-        let cors = Cors::default()
-            .allowed_origin("http://localhost:3000")
-            .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
-            .allowed_headers(vec![
-                header::CONTENT_TYPE,
-                header::AUTHORIZATION,
-                header::ACCEPT,
-            ])
-            .supports_credentials();
+        // let cors = Cors::default()
+        //     .allowed_origin("http://localhost:3000")
+        //     .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
+        //     .allowed_headers(vec![
+        //         header::CONTENT_TYPE,
+        //         header::AUTHORIZATION,
+        //         header::ACCEPT,
+        //     ])
+        //     .supports_credentials();
         App::new()
             .app_data(web::Data::new(AppState { db: pool.clone() }))
-            .configure(handler::config)
+            // .configure(handler::config)
             // .wrap(cors)
             .wrap(Logger::default())
+            .route("api/healthcheck", web::get().to(health_check))
+            .route("api/categories", web::get().to(get_categories))
+            .route("api/category", web::post().to(create_category))
+            .route("api/category/{id}", web::get().to(get_category))
+            .route("api/category/{id}", web::patch().to(edit_category))
+            .route("api/category/{id}", web::delete().to(delete_category))
     })
     .bind(("127.0.0.1", 8000))?
     .run()

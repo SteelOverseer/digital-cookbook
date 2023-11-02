@@ -1,21 +1,8 @@
-use crate::{
-    model::CategoryModel,
-    schema::{CreateCategorySchema, FilterOptions, UpdateCategorySchema},
-    AppState,
-};
-use actix_web::{delete, get, patch, post, web, HttpResponse, Responder};
-use chrono::prelude::*;
+use crate::models::{CategoryModel, CreateCategorySchema, FilterOptions, UpdateCategorySchema, AppState};
+use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
 
-#[get("/healthchecker")]
-async fn health_checker_handler() -> impl Responder {
-    const MESSAGE: &str = "Build Simple CRUD API with Rust, SQLX, Postgres,and Actix Web";
-
-    HttpResponse::Ok().json(json!({"status": "success","message": MESSAGE}))
-}
-
-#[get("/categories")]
-pub async fn category_list_handler(
+pub async fn get_categories(
     opts: web::Query<FilterOptions>,
     data: web::Data<AppState>,
 ) -> impl Responder {
@@ -47,8 +34,7 @@ pub async fn category_list_handler(
     HttpResponse::Ok().json(json_response)
 }
 
-#[post("/category")]
-async fn create_category_handler(
+pub async fn create_category(
     body: web::Json<CreateCategorySchema>,
     data: web::Data<AppState>,
 ) -> impl Responder {
@@ -82,8 +68,7 @@ async fn create_category_handler(
     }
 }
 
-#[get("/category/{id}")]
-async fn get_category_handler(
+pub async fn get_category(
     path: web::Path<uuid::Uuid>,
     data: web::Data<AppState>,
 ) -> impl Responder {
@@ -108,8 +93,7 @@ async fn get_category_handler(
     }
 }
 
-#[patch("/category/{id}")]
-async fn edit_category_handler(
+pub async fn edit_category(
     path: web::Path<uuid::Uuid>,
     body: web::Json<UpdateCategorySchema>,
     data: web::Data<AppState>,
@@ -125,10 +109,13 @@ async fn edit_category_handler(
             .json(serde_json::json!({"status": "fail","message": message}));
     }
 
+    let category = query_result.unwrap();
+
     let query_result = sqlx::query_as!(
         CategoryModel,
-        "UPDATE categories SET name = $1 RETURNING *",
-        body.name
+        "UPDATE categories SET name = $1 WHERE id = $2 RETURNING *",
+        body.name.to_owned().unwrap_or(category.name),
+        category_id
     )
     .fetch_one(&data.db)
     .await
@@ -150,8 +137,7 @@ async fn edit_category_handler(
     }
 }
 
-#[delete("/category/{id}")]
-async fn delete_category_handler(
+pub async fn delete_category(
     path: web::Path<uuid::Uuid>,
     data: web::Data<AppState>,
 ) -> impl Responder {
@@ -169,17 +155,3 @@ async fn delete_category_handler(
 
     HttpResponse::NoContent().finish()
 }
-
-pub fn config(conf: &mut web::ServiceConfig) {
-    let scope = web::scope("/api")
-        .service(health_checker_handler)
-        .service(category_list_handler)
-        .service(create_category_handler)
-        .service(get_category_handler)
-        .service(edit_category_handler)
-        .service(delete_category_handler);
-
-    conf.service(scope);
-}
-
-

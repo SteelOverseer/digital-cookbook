@@ -8,3 +8,13 @@ pub struct CategoryModel {
     pub id: Uuid,
     pub name: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CreateCategorySchema {
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UpdateCategorySchema {
+    pub name: Option<String>
+}
