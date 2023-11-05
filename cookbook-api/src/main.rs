@@ -5,7 +5,8 @@ use cookbook_api::models::AppState;
 use cookbook_api::routes::{
     health_check, get_categories, create_category, get_category, edit_category, delete_category,
     get_recipes, get_recipes_by_category, create_recipe, get_recipe, edit_recipe, delete_recipe, 
-    get_instructions_for_recipe, create_instruction, edit_instruction, delete_instruction
+    get_instructions_for_recipe, create_instruction, edit_instruction, delete_instruction,
+    get_tags, create_tag, edit_tag, delete_tag
 };
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
@@ -67,6 +68,11 @@ async fn main() -> std::io::Result<()> {
             .route("api/instruction", web::post().to(create_instruction))
             .route("api/instruction/{id}", web::patch().to(edit_instruction))
             .route("api/instruction/{id}", web::delete().to(delete_instruction))
+            .route("api/tags", web::get().to(get_tags))
+            .route("api/tag", web::post().to(create_tag))
+            .route("api/tag/{id}", web::patch().to(edit_tag))
+            .route("api/tag/{id}", web::delete().to(delete_tag))
+
     })
     .bind(("127.0.0.1", 8000))?
     .run()
