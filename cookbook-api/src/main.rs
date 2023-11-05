@@ -3,7 +3,8 @@ use actix_web::middleware::Logger;
 use actix_web::{http::header, web, App, HttpServer};
 use cookbook_api::models::AppState;
 use cookbook_api::routes::{
-    health_check, get_categories, create_category, get_category, edit_category, delete_category
+    health_check, get_categories, create_category, get_category, edit_category, delete_category,
+    get_recipes, get_recipes_by_category, create_recipe, get_recipe, edit_recipe, delete_recipe
 };
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
@@ -55,6 +56,12 @@ async fn main() -> std::io::Result<()> {
             .route("api/category/{id}", web::get().to(get_category))
             .route("api/category/{id}", web::patch().to(edit_category))
             .route("api/category/{id}", web::delete().to(delete_category))
+            .route("api/recipes", web::get().to(get_recipes))
+            .route("api/recipes/category/{id}", web::get().to(get_recipes_by_category))
+            .route("api/recipe", web::post().to(create_recipe))
+            .route("api/recipe/{id}", web::get().to(get_recipe))
+            .route("api/recipe/{id}", web::patch().to(edit_recipe))
+            .route("api/recipe/{id}", web::delete().to(delete_recipe))
     })
     .bind(("127.0.0.1", 8000))?
     .run()

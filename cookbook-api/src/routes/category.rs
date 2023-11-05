@@ -24,12 +24,12 @@ pub async fn get_categories(
             .json(json!({"status": "error","message": message}));
     }
 
-    let notes = query_result.unwrap();
+    let categories = query_result.unwrap();
 
     let json_response = serde_json::json!({
         "status": "success",
-        "results": notes.len(),
-        "notes": notes
+        "results": categories.len(),
+        "categories": categories
     });
     HttpResponse::Ok().json(json_response)
 }
@@ -47,12 +47,12 @@ pub async fn create_category(
     .await;
 
     match query_result {
-        Ok(note) => {
-            let note_response = serde_json::json!({"status": "success","data": serde_json::json!({
-                "note": note
+        Ok(category) => {
+            let category_response = serde_json::json!({"status": "success","data": serde_json::json!({
+                "category": category
             })});
 
-            return HttpResponse::Ok().json(note_response);
+            return HttpResponse::Ok().json(category_response);
         }
         Err(e) => {
             if e.to_string()
