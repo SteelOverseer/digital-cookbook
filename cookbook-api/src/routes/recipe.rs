@@ -193,3 +193,59 @@ pub async fn delete_recipe(
 
     HttpResponse::NoContent().finish()
 }
+
+pub async fn add_tag(
+    recipe_path: web::Path<uuid::Uuid>,
+    tag_path: web::Path<uuid::Uuid>,
+    data: web::Data<AppState>
+) -> impl Responder {
+    let recipe_id = recipe_path.into_inner();
+    let tag_id = tag_path.into_inner();
+
+    let result = sqlx::query!(
+        "INSERT INTO recipe_tag_map (recipe_id, tag_id) VALUES ($1, $2)",
+        recipe_id,
+        tag_id
+    )
+    .fetch_one(&data.db)
+    .await;
+
+    match result {
+        Ok(_) => {
+            return HttpResponse::NoContent().finish();
+        }
+        Err(err) => {
+            let message = format!("Error: {:?}", err);
+            return HttpResponse::InternalServerError()
+                .json(serde_json::json!({"status": "error","message": message}));
+        }
+    }
+}
+
+pub async fn remove_tag(
+    recipe_path: web::Path<uuid::Uuid>,
+    tag_path: web::Path<uuid::Uuid>,
+    data: web::Data<AppState>
+) -> impl Responder {
+    let recipe_id = recipe_path.into_inner();
+    let tag_id = tag_path.into_inner();
+
+    let result = sqlx::query!(
+        "DELETE FROM recipe_tag_map WHERE recipe_id = $1 AND tag_id = $2",
+        recipe_id,
+        tag_id
+    )
+    .fetch_one(&data.db)
+    .await;
+
+    match result {
+        Ok(_) => {
+            return HttpResponse::NoContent().finish();
+        }
+        Err(err) => {
+            let message = format!("Error: {:?}", err);
+            return HttpResponse::InternalServerError()
+                .json(serde_json::json!({"status": "error","message": message}));
+        }
+    }
+}

@@ -4,7 +4,7 @@ use actix_web::{http::header, web, App, HttpServer};
 use cookbook_api::models::AppState;
 use cookbook_api::routes::{
     health_check, get_categories, create_category, get_category, edit_category, delete_category,
-    get_recipes, get_recipes_by_category, create_recipe, get_recipe, edit_recipe, delete_recipe, 
+    get_recipes, get_recipes_by_category, create_recipe, get_recipe, edit_recipe, delete_recipe, add_tag, remove_tag,
     get_instructions_for_recipe, create_instruction, edit_instruction, delete_instruction,
     get_tags, create_tag, edit_tag, delete_tag
 };
@@ -72,7 +72,8 @@ async fn main() -> std::io::Result<()> {
             .route("api/tag", web::post().to(create_tag))
             .route("api/tag/{id}", web::patch().to(edit_tag))
             .route("api/tag/{id}", web::delete().to(delete_tag))
-
+            .route("api/recipe/{id}/tag/{id}", web::post().to(add_tag))
+            .route("api/recipe/{id}/tag/{id}", web::delete().to(remove_tag))
     })
     .bind(("127.0.0.1", 8000))?
     .run()
