@@ -48,9 +48,12 @@ pub async fn create_category(
 
     match query_result {
         Ok(category) => {
-            let category_response = serde_json::json!({"status": "success","data": serde_json::json!({
-                "category": category
-            })});
+            let category_response = serde_json::json!(
+                {
+                    "status": "success",
+                    "category": category
+                }
+            );
 
             return HttpResponse::Ok().json(category_response);
         }

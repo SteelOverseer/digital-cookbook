@@ -38,19 +38,19 @@ async fn main() -> std::io::Result<()> {
     println!("🚀 Server started successfully");
 
     HttpServer::new(move || {
-        // let cors = Cors::default()
-        //     .allowed_origin("http://localhost:3000")
-        //     .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
-        //     .allowed_headers(vec![
-        //         header::CONTENT_TYPE,
-        //         header::AUTHORIZATION,
-        //         header::ACCEPT,
-        //     ])
-        //     .supports_credentials();
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:5173")
+            .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
+            .allowed_headers(vec![
+                header::CONTENT_TYPE,
+                header::AUTHORIZATION,
+                header::ACCEPT,
+            ])
+            .supports_credentials();
         App::new()
             .app_data(web::Data::new(AppState { db: pool.clone() }))
             // .configure(handler::config)
-            // .wrap(cors)
+            .wrap(cors)
             .wrap(Logger::default())
             .route("api/healthcheck", web::get().to(health_check))
             .route("api/categories", web::get().to(get_categories))
@@ -72,8 +72,8 @@ async fn main() -> std::io::Result<()> {
             .route("api/tag", web::post().to(create_tag))
             .route("api/tag/{id}", web::patch().to(edit_tag))
             .route("api/tag/{id}", web::delete().to(delete_tag))
-            .route("api/recipe/{id}/tag/{id}", web::post().to(add_tag))
-            .route("api/recipe/{id}/tag/{id}", web::delete().to(remove_tag))
+            .route("api/recipe/{recipe_id}/tag/{tag_id}", web::post().to(add_tag))
+            .route("api/recipe/{recipe_id}/tag/{tag_id}", web::delete().to(remove_tag))
     })
     .bind(("127.0.0.1", 8000))?
     .run()
