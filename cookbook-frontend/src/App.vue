@@ -11,13 +11,13 @@
     </v-row>
     <v-row no-gutters>
       <v-col cols="2">
-        <v-sheet class="pa-2 ma-2">
-          <Categories />
+        <v-sheet class="pa-2 ma-2" id="categories-accordian">
+          <Categories :categories="state.categories" />
         </v-sheet>
       </v-col>
       <v-col>
         <v-sheet class="pa-2 ma-2">
-          
+          <CreateRecipeForm :categories="state.categories" />
         </v-sheet>
       </v-col>
     </v-row>
@@ -42,9 +42,13 @@
 
 <script setup lang="ts">
 import Categories from './components/Categories.vue'
+import CreateRecipeForm from './components/CreateRecipeForm.vue'
 import { onErrorCaptured, reactive } from 'vue';
+import CategoryService from './services/CategoryService';
+import CategoryModel from './models/CategoryModel';
 
 const state = reactive({
+  categories: [] as CategoryModel[],
 	showToast: false,
 	message: ""
 });
@@ -55,14 +59,30 @@ onErrorCaptured((error) => {
   state.message = error.message;
   state.showToast = true;
 })
+
+const getCategories = async () => {
+    const categoriesResponse = await CategoryService.getAll();
+
+    if(categoriesResponse.data.status == "success") {
+        state.categories = categoriesResponse.data.categories
+    }
+}
+
+getCategories()
 </script>
 
 <style scoped>
 #app-container {
-  background-color: blue;
+  /* background-color: red; */
+  border: 2px solid red;
 }
 
 #header {
   text-align: center;
 }
+
+#categories-accordian {
+    background-color: #e6ab0b
+}
 </style>
+./models/CategoryModel

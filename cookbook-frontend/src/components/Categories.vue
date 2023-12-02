@@ -2,12 +2,12 @@
     <v-btn variant="tonal" @click="state.showDialog = true">New Category</v-btn>
     <v-expansion-panels variant="accordion">
         <v-expansion-panel 
-            v-for="category in state.categories"
+            v-for="category in categories"
             :key="category.id"
         >
             <v-expansion-panel-title>{{ category.name }}</v-expansion-panel-title>
             <v-expansion-panel-text
-                v-for="i in 3"
+                v-for="i in 10"
                 :key="i"
             >
                 Recipe {{ i }}
@@ -66,28 +66,30 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import CategoryService from '../services/CategoryService';
-import Category from '../models/Category';
+// import CategoryModel from '../models/CategoryModel';
+
+const props = defineProps(['categories'])
 
 const state = reactive({
-  categories: [] as Category[],
+//   categories: [] as Category[],
   showDialog: false,
   newCategoryName: "",
   loading: false
 });
 
-const getCategories = async () => {
-    const categoriesResponse = await CategoryService.getAll();
+// const getCategories = async () => {
+//     const categoriesResponse = await CategoryService.getAll();
 
-    if(categoriesResponse.data.status == "success") {
-        state.categories = categoriesResponse.data.categories
-    }
-}
+//     if(categoriesResponse.data.status == "success") {
+//         state.categories = categoriesResponse.data.categories
+//     }
+// }
 
 const createCategory = async () => {
     console.log("i am here", state.newCategoryName)
     try {
         const createCategoryResponse = await CategoryService.createCategory(state.newCategoryName)
-        state.categories.push(createCategoryResponse.data.category)
+        props.categories.push(createCategoryResponse.data.category)
     } catch (error) {
         console.log("ERROR", error.response.data.message)
         throw(new Error(error.response.data.message))
@@ -100,10 +102,13 @@ const createCategory = async () => {
     state.newCategoryName = "";
 }
 
-getCategories()
+// getCategories()
 
 </script>
 
 <style scoped>
-
+/* #categories-accordian {
+    background-color: #e6ab0b
+} */
 </style>
+../models/CategoryModel
