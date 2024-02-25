@@ -71,11 +71,10 @@ pub async fn create_recipe(
 ) -> impl Responder {
     let result = sqlx::query_as!(
         RecipeModel,
-        "INSERT INTO recipes (category_id, name, notes, ingredients) VALUES ($1, $2, $3, $4) RETURNING *",
+        "INSERT INTO recipes (category_id, name, notes) VALUES ($1, $2, $3) RETURNING *",
         body.category_id,
         body.name,
-        body.notes,
-        body.ingredients
+        body.notes
     )
     .fetch_one(&data.db)
     .await;
@@ -148,11 +147,10 @@ pub async fn edit_recipe(
 
     let result = sqlx::query_as!(
         RecipeModel,
-        "UPDATE recipes SET category_id = $1, name = $2, notes = $3, ingredients = $4 WHERE id = $5 RETURNING *",
+        "UPDATE recipes SET category_id = $1, name = $2, notes = $3 WHERE id = $4 RETURNING *",
         body.category_id.to_owned().unwrap_or(recipe.category_id),
         body.name.to_owned().unwrap_or(recipe.name),
         body.notes.to_owned().unwrap_or(recipe.notes.unwrap()),
-        body.ingredients.to_owned().unwrap_or(recipe.ingredients.unwrap()),
         recipe_id
     )
     .fetch_one(&data.db)

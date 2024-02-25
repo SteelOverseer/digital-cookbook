@@ -6,14 +6,9 @@ pub async fn get_categories(
     opts: web::Query<FilterOptions>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    let limit = opts.limit.unwrap_or(10);
-    let offset = (opts.page.unwrap_or(1) - 1) * limit;
-
     let query_result = sqlx::query_as!(
         CategoryModel,
-        "SELECT * FROM categories ORDER by id LIMIT $1 OFFSET $2",
-        limit as i32,
-        offset as i32
+        "SELECT * FROM categories ORDER by id",
     )
     .fetch_all(&data.db)
     .await;

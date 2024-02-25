@@ -9,7 +9,6 @@ pub struct RecipeModel {
     pub category_id: Uuid,
     pub name: String,
     pub notes: Option<String>,
-    pub ingredients: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -17,7 +16,6 @@ pub struct CreateRecipeSchema {
     pub category_id: Uuid,
     pub name: String,
     pub notes: String,
-    pub ingredients: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,5 +23,4 @@ pub struct UpdateRecipeSchema {
     pub category_id: Option<Uuid>,
     pub name: Option<String>,
     pub notes: Option<String>,
-    pub ingredients: Option<String>
 }

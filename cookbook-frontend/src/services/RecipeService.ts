@@ -1,5 +1,5 @@
 import http from '../http-common';
-import CreateRecipeModel from '../models/CreateRecipeModel';
+import CreateRecipeModel from '../models/Recipe/CreateRecipeModel';
 
 class RecipeService {
 	getAll(): Promise<any> {

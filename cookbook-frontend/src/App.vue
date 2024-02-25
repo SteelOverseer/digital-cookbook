@@ -11,20 +11,25 @@
     </v-row>
     <v-row no-gutters>
       <v-col cols="2">
+        <v-btn variant="tonal" @click="state.showNewCategoryDialog = true">New Category</v-btn>
+        <v-btn variant="tonal" @click="state.showNewRecipeDialog = true">New Recipe</v-btn>
         <v-sheet class="pa-2 ma-2" id="categories-accordian">
-          <Categories :categories="state.categories" />
+          <Categories :data="state.accordianData" @select-recipe="(recipe) => state.selectedRecipe = recipe" />
         </v-sheet>
       </v-col>
       <v-col>
         <v-sheet class="pa-2 ma-2">
+          Select a recipe on the left or create one to get started
+          selected recipe: {{ state.selectedRecipe }}
           <CreateRecipeForm :categories="state.categories" />
+          <!-- <Recipe :recipe="state.selectedRecipe" /> -->
         </v-sheet>
       </v-col>
     </v-row>
     <v-snackbar
       v-model="state.showToast"
       multi-line
-	  location="top right"
+	    location="top right"
     >
       {{ state.message }}
       <template v-slot:actions>
@@ -38,19 +43,75 @@
       </template>
     </v-snackbar>
   </v-container>
+  <v-dialog
+    v-model="state.showNewCategoryDialog"
+    persistent
+    width="300"
+  >
+    <v-card>
+      <v-card-title>
+        <span class="text-h5">Create Category</span>
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          <v-row>
+            <v-col
+              cols="12"
+              sm="8"
+              md="10"
+            >
+              <v-text-field
+                label="Category Name*"
+                required
+                v-model="state.newCategoryName"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
+        <small>*indicates required field</small>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="blue-darken-1"
+          variant="text"
+          @click="state.showNewCategoryDialog = false"
+        >
+          Close
+        </v-btn>
+        <v-btn
+          color="blue-darken-1"
+          variant="text"
+          @click="createCategory()"
+        >
+          Save
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
 import Categories from './components/Categories.vue'
 import CreateRecipeForm from './components/CreateRecipeForm.vue'
-import { onErrorCaptured, reactive } from 'vue';
+import { onErrorCaptured, reactive, ref } from 'vue';
 import CategoryService from './services/CategoryService';
-import CategoryModel from './models/CategoryModel';
+import CategoryModel from './models/Category/CategoryModel';
+import RecipeService from './services/RecipeService';
+import RecipeModel from './models/Recipe/RecipeModel';
+import Recipe from './components/Recipe.vue'
 
 const state = reactive({
   categories: [] as CategoryModel[],
+  recipes: [] as RecipeModel[],
 	showToast: false,
-	message: ""
+	message: "",
+  accordianData: [],
+  loading: true,
+  showNewCategoryDialog: false,
+  showNewRecipeDialog: false,
+  newCategoryName: "",
+  selectedRecipe: {} as RecipeModel
 });
 
 onErrorCaptured((error) => {
@@ -61,20 +122,74 @@ onErrorCaptured((error) => {
 })
 
 const getCategories = async () => {
+  try {
     const categoriesResponse = await CategoryService.getAll();
-
     if(categoriesResponse.data.status == "success") {
         state.categories = categoriesResponse.data.categories
     }
+  } catch (error) {
+      console.log("ERROR", error.response.data.message)
+      throw(new Error(error.response.data.message))
+  }
 }
 
-getCategories()
+const getRecipes = async () => {
+  try {
+    const response = await RecipeService.getAll();
+    if(response.data.status == "success") {
+        state.recipes = response.data.recipes
+    }
+  } catch (error) {
+      console.log("ERROR", error.response.data.message)
+      throw(new Error(error.response.data.message))
+  }
+}
+
+const fetchData = async () => {
+  await getCategories()
+  await getRecipes()
+
+  state.categories.forEach(category => {
+    var recipes = state.recipes.filter((recipe) => { return recipe.category_id == category.id})
+    state.accordianData.push(
+      {
+        ...category,
+        recipes: recipes
+      }
+      
+    )
+  });
+
+  state.loading = false;
+}
+
+const createCategory = async () => {
+    try {
+      const createCategoryResponse = await CategoryService.createCategory(state.newCategoryName)
+      const newCategory = createCategoryResponse.data.category
+      state.categories.push(newCategory)
+      state.accordianData.push(
+        {
+          ...newCategory,
+          recipes: []
+        }
+      )
+    } catch (error) {
+      console.log("ERROR", error.response.data.message)
+      throw(new Error(error.response.data.message))
+    }
+
+    state.showNewCategoryDialog = false;
+    state.newCategoryName = "";
+}
+
+fetchData();
 </script>
 
 <style scoped>
 #app-container {
   /* background-color: red; */
-  border: 2px solid red;
+  border: 1px solid black;
 }
 
 #header {
@@ -82,7 +197,6 @@ getCategories()
 }
 
 #categories-accordian {
-    background-color: #e6ab0b
+    /* background-color: #e6ab0b */
 }
 </style>
-./models/CategoryModel

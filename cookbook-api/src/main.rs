@@ -3,10 +3,29 @@ use actix_web::middleware::Logger;
 use actix_web::{http::header, web, App, HttpServer};
 use cookbook_api::models::AppState;
 use cookbook_api::routes::{
-    health_check, get_categories, create_category, get_category, edit_category, delete_category,
-    get_recipes, get_recipes_by_category, create_recipe, get_recipe, edit_recipe, delete_recipe, add_tag, remove_tag,
-    get_instructions_for_recipe, create_instruction, edit_instruction, delete_instruction,
-    get_tags, create_tag, edit_tag, delete_tag
+    add_tag, 
+    create_category,
+    create_ingredient,
+    create_instruction,
+    create_recipe,
+    create_tag,
+    delete_category,
+    delete_instruction,
+    delete_recipe,
+    delete_tag,
+    edit_category,
+    edit_instruction,
+    edit_recipe,
+    edit_tag,
+    get_categories,
+    get_category,
+    get_instructions_for_recipe,
+    get_recipe,
+    get_recipes,
+    get_recipes_by_category,
+    get_tags,
+    health_check,
+    remove_tag
 };
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
@@ -74,6 +93,7 @@ async fn main() -> std::io::Result<()> {
             .route("api/tag/{id}", web::delete().to(delete_tag))
             .route("api/recipe/{recipe_id}/tag/{tag_id}", web::post().to(add_tag))
             .route("api/recipe/{recipe_id}/tag/{tag_id}", web::delete().to(remove_tag))
+            .route("api/ingredient", web::post().to(create_ingredient))
     })
     .bind(("127.0.0.1", 8000))?
     .run()

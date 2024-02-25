@@ -17,10 +17,22 @@
             item-value="id"
             v-model="state.category"
           ></v-select>
-          <v-textarea
+          <div id="ingredients">
+            <div v-for="(ingredient, index) in state.ingredients" class="ingredient-row">
+              <v-text-field
+                v-model="state.ingredients[index]"
+                clearable 
+                label="Ingredient"
+              ></v-text-field>
+              <v-btn variant="tonal" @click="state.ingredients.push('')">+</v-btn>
+            </div>
+          </div>
+          {{ state.ingredients }}
+          <!-- <v-textarea
             v-model="state.ingredients"
             label="Ingredients"
-          ></v-textarea>
+          >
+        </v-textarea> -->
           <!-- <v-list two-line>
             <draggable v-model="state.items">
               <template v-for="(v, i) in state.items" :key="v.ID">
@@ -71,13 +83,17 @@
 import { reactive } from 'vue';
 import CreateRecipeModel from '../models/CreateRecipeModel';
 import RecipeService from '../services/RecipeService';
+import { stat } from 'fs';
+import CreateIngredientModel from '../models/Ingredient/CreateIngredientModel';
+import RecipeModel from '../models/Recipe/RecipeModel';
+import IngredientService from '../services/IngredientService';
 
 const props = defineProps(['categories'])
 
 const state = reactive({
   name: "",
   notes: "",
-  ingredients: "",
+  ingredients: [""],
   category: "",
   items: [
         {"ID":1,"Title":"Fact sheets, brochures, educational materials","Ordering":1,"Subtitle":""},
@@ -121,6 +137,17 @@ const submit = async () => {
   try {
     let resp = await RecipeService.createRecipe(request);
     console.log('resp:', resp)
+    let recipe:RecipeModel = resp.data.recipe
+    state.ingredients.forEach(async ingredient => {
+      if(ingredient != null && ingredient != "" && ingredient != " ") {
+        let createIngredientReq:CreateIngredientModel = {
+          recipe_id: recipe.id,
+          ingredient_text: ingredient
+        }
+
+        await IngredientService.createIngredient(createIngredientReq);
+      }
+    });
   } catch (error) {
       console.log("ERROR", error.response.data.message)
       throw(new Error(error.response.data.message))
@@ -130,5 +157,9 @@ const submit = async () => {
 </script>
 
 <style scoped>
+.ingredient-row {
+  display: flex;
+  flex-direction: row;
+}
 
 </style>

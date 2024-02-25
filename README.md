@@ -4,7 +4,7 @@ Add a migration
 sqlx migrate add -r (name)
 
 Run migration
-sql migrate run
+sqlx migrate run
 
 Run api with
 cargo watch -q -c -w src/ -x run
