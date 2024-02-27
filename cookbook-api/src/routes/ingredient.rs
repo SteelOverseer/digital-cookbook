@@ -18,16 +18,13 @@ pub async fn get_ingredients_for_recipe(
 
     match result {
         Ok(ingredients) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "ingredients": ingredients
-            });
+            let response = serde_json::json!(ingredients);
             return HttpResponse::Ok().json(response);
         }
         Err(_) => {
             let message = format!("ingredients with Recipe ID: {} not found", recipe_id);
             return HttpResponse::NotFound()
-                .json(serde_json::json!({"status": "fail","message": message}));
+                .json(serde_json::json!(message));
         }
 
     }
@@ -48,18 +45,12 @@ pub async fn create_ingredient(
 
     match result {
         Ok(ingredient) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "ingredient": ingredient
-            });
+            let response = serde_json::json!(ingredient);
 
             return HttpResponse::Ok().json(response);
         }
         Err(e) => {
-            return HttpResponse::InternalServerError().json(serde_json::json!({
-                "status": "error",
-                "message": format!("{:?}", e)
-            }))
+            return HttpResponse::InternalServerError().json(serde_json::json!(format!("{:?}", e)))
         }
     }
 }
@@ -81,10 +72,7 @@ pub async fn edit_ingredient(
     if result.is_err() {
         let message = format!("Ingredient with ID: {} not found", ingredient_id);
         return HttpResponse::NotFound()
-                .json(serde_json::json!({
-                    "status": "fail",
-                    "message": message
-                }))
+                .json(serde_json::json!(message))
     }
 
     let result = sqlx::query_as!(
@@ -98,20 +86,14 @@ pub async fn edit_ingredient(
 
     match result {
         Ok(ingredient) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "ingredient": ingredient
-            });
+            let response = serde_json::json!(ingredient);
 
             return HttpResponse::Ok().json(response);
         }
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({
-                    "status": "error",
-                    "message": message
-                }));
+                .json(serde_json::json!(message));
 
         }
     }
@@ -133,10 +115,7 @@ pub async fn delete_ingredient(
 
     if rows_affected == 0 {
         let message = format!("Ingredient with ID: {} not found", ingredient_id);
-        return HttpResponse::NotFound().json(json!({
-            "status": "fail",
-            "message": message
-        }));
+        return HttpResponse::NotFound().json(json!(message));
     }
 
     HttpResponse::NoContent().finish()

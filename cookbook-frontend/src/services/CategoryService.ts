@@ -1,11 +1,12 @@
 import http from '../http-common';
+import ResponseModel from '../models/ResponseModel';
 
 class CategoryService {
-	getAll(): Promise<any> {
+	getAll(): Promise<ResponseModel> {
 		return http.get("/categories");
 	}
 
-	createCategory(categoryName: string): Promise<any> {
+	createCategory(categoryName: string): Promise<ResponseModel> {
 		return http.post("/category", {name: categoryName})
 	}
 }

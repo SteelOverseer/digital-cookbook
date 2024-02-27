@@ -27,11 +27,7 @@ pub async fn get_recipes(
 
     let recipes = result.unwrap();
 
-    let json_response = serde_json::json!({
-        "status": "success",
-        "results": recipes.len(),
-        "recipes": recipes
-    });
+    let json_response = serde_json::json!(recipes);
     HttpResponse::Ok().json(json_response)
 }
 
@@ -50,16 +46,13 @@ pub async fn get_recipes_by_category(
 
     match result {
         Ok(recipes) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "recipes": recipes
-            });
+            let response = serde_json::json!(recipes);
             return HttpResponse::Ok().json(response);
         }
         Err(_) => {
             let message = format!("Recipes with Category ID: {} not found", category_id);
             return HttpResponse::NotFound()
-                .json(serde_json::json!({"status": "fail","message": message}));
+                .json(serde_json::json!(message));
         }
 
     }
@@ -81,15 +74,12 @@ pub async fn create_recipe(
 
     match result {
         Ok(recipe) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "recipe": recipe
-            });
+            let response = serde_json::json!(recipe);
             return HttpResponse::Ok().json(response);
         }
         Err(e) => {
             return HttpResponse::InternalServerError()
-            .json(serde_json::json!({"status": "error","message": format!("{:?}", e)}));
+            .json(serde_json::json!(format!("{:?}", e)));
         }
     }
 }
@@ -109,16 +99,13 @@ pub async fn get_recipe(
 
     match result {
         Ok(recipe) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "recipe": recipe
-            });
+            let response = serde_json::json!(recipe);
 
             return HttpResponse::Ok().json(response);
         }
         Err(e) => {
             return HttpResponse::NotFound()
-            .json(serde_json::json!({"status": "error","message": format!("{:?}", e)}));
+            .json(serde_json::json!(format!("{:?}", e)));
         }
     }
 }
@@ -140,7 +127,7 @@ pub async fn edit_recipe(
     if result.is_err() {
         let message = format!("Recipe with ID: {} not found", recipe_id);
         return HttpResponse::NotFound()
-            .json(serde_json::json!({"status": "fail","message": message}));
+            .json(serde_json::json!(message));
     }
 
     let recipe = result.unwrap();
@@ -158,17 +145,14 @@ pub async fn edit_recipe(
 
     match result {
         Ok(recipe) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "recipe": recipe
-            });
+            let response = serde_json::json!(recipe);
 
             return HttpResponse::Ok().json(response);
         }
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({"status": "error","message": message}));
+                .json(serde_json::json!(message));
         }
     }
 }
@@ -186,7 +170,7 @@ pub async fn delete_recipe(
 
     if rows_affected == 0 {
         let message = format!("Recipe with ID: {} not found", recipe_id);
-        return HttpResponse::NotFound().json(json!({"status": "fail","message": message}));
+        return HttpResponse::NotFound().json(json!(message));
     }
 
     HttpResponse::NoContent().finish()
@@ -215,7 +199,7 @@ pub async fn add_tag(
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({"status": "error","message": message}));
+                .json(serde_json::json!(message));
         }
     }
 }
@@ -243,7 +227,7 @@ pub async fn remove_tag(
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({"status": "error","message": message}));
+                .json(serde_json::json!(message));
         }
     }
 }

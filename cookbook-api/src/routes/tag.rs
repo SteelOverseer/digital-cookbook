@@ -14,19 +14,12 @@ pub async fn get_tags(data: web::Data<AppState>) -> impl Responder {
     if result.is_err() {
         let message = "There was an error fetching all tags";
         return HttpResponse::InternalServerError()
-            .json(json!({
-                "status": "error",
-                "message": message
-            }))
+            .json(json!(message))
     }
 
     let tags = result.unwrap();
 
-    let response = serde_json::json!({
-        "status": "success",
-        "results": tags.len(),
-        "tags": tags
-    });
+    let response = serde_json::json!(tags);
 
     HttpResponse::Ok().json(response)
 }
@@ -45,10 +38,7 @@ pub async fn create_tag(
 
     match result {
         Ok(tag) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "tag": tag
-            });
+            let response = serde_json::json!(tag);
 
             return HttpResponse::Ok().json(response)
         }
@@ -57,11 +47,11 @@ pub async fn create_tag(
             .contains("duplicate key value violates unique constraint")
         {
             return HttpResponse::BadRequest()
-            .json(serde_json::json!({"status": "fail","message": "Tag with that name already exists"}));
+            .json(serde_json::json!("Tag with that name already exists"));
         }
 
         return HttpResponse::InternalServerError()
-            .json(serde_json::json!({"status": "error","message": format!("{:?}", e)}));
+            .json(serde_json::json!(format!("{:?}", e)));
 
         }
     }
@@ -84,7 +74,7 @@ pub async fn edit_tag(
     if result.is_err() {
         let message = format!("Tag with ID: {} not found", tag_id);
         return HttpResponse::NotFound()
-            .json(serde_json::json!({"status": "fail","message": message}));
+            .json(serde_json::json!(message));
     }
 
     let result = sqlx::query_as!(
@@ -98,17 +88,14 @@ pub async fn edit_tag(
 
     match result {
         Ok(tag) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "tag": tag
-            });
+            let response = serde_json::json!(tag);
 
             return HttpResponse::Ok().json(response);
         }
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({"status": "error","message": message}));
+                .json(serde_json::json!(message));
         }
     }
 }
@@ -129,10 +116,7 @@ pub async fn delete_tag(
 
     if rows_affected == 0 {
         let message = format!("Tag with ID: {} not found", tag_id);
-        return HttpResponse::NotFound().json(json!({
-            "status": "fail",
-            "message": message
-        }));
+        return HttpResponse::NotFound().json(json!(message));
     }
 
     HttpResponse::NoContent().finish()

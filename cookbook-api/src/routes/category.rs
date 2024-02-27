@@ -16,16 +16,12 @@ pub async fn get_categories(
     if query_result.is_err() {
         let message = "Something bad happened while fetching all categories";
         return HttpResponse::InternalServerError()
-            .json(json!({"status": "error","message": message}));
+            .json(json!(message));
     }
 
     let categories = query_result.unwrap();
 
-    let json_response = serde_json::json!({
-        "status": "success",
-        "results": categories.len(),
-        "categories": categories
-    });
+    let json_response = serde_json::json!(categories);
     HttpResponse::Ok().json(json_response)
 }
 
@@ -43,12 +39,7 @@ pub async fn create_category(
 
     match query_result {
         Ok(category) => {
-            let category_response = serde_json::json!(
-                {
-                    "status": "success",
-                    "category": category
-                }
-            );
+            let category_response = serde_json::json!(category);
 
             return HttpResponse::Ok().json(category_response);
         }
@@ -61,7 +52,7 @@ pub async fn create_category(
             }
 
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({"status": "error","message": format!("{:?}", e)}));
+                .json(serde_json::json!(format!("{:?}", e)));
         }
     }
 }
@@ -77,16 +68,14 @@ pub async fn get_category(
 
     match query_result {
         Ok(category) => {
-            let category_response = serde_json::json!({"status": "success","data": serde_json::json!({
-                "category": category
-            })});
+            let category_response = serde_json::json!(category);
 
             return HttpResponse::Ok().json(category_response);
         }
         Err(_) => {
             let message = format!("Category with ID: {} not found", category_id);
             return HttpResponse::NotFound()
-                .json(serde_json::json!({"status": "fail","message": message}));
+                .json(serde_json::json!(message));
         }
     }
 }
@@ -104,7 +93,7 @@ pub async fn edit_category(
     if query_result.is_err() {
         let message = format!("Category with ID: {} not found", category_id);
         return HttpResponse::NotFound()
-            .json(serde_json::json!({"status": "fail","message": message}));
+            .json(serde_json::json!(message));
     }
 
     let category = query_result.unwrap();
@@ -121,16 +110,14 @@ pub async fn edit_category(
 
     match query_result {
         Ok(category) => {
-            let category_response = serde_json::json!({"status": "success","data": serde_json::json!({
-                "category": category
-            })});
+            let category_response = serde_json::json!(category);
 
             return HttpResponse::Ok().json(category_response);
         }
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({"status": "error","message": message}));
+                .json(serde_json::json!(message));
         }
     }
 }
@@ -148,7 +135,7 @@ pub async fn delete_category(
 
     if rows_affected == 0 {
         let message = format!("Category with ID: {} not found", category_id);
-        return HttpResponse::NotFound().json(json!({"status": "fail","message": message}));
+        return HttpResponse::NotFound().json(json!(message));
     }
 
     HttpResponse::NoContent().finish()

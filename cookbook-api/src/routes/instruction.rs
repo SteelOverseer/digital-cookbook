@@ -133,10 +133,7 @@ pub async fn delete_instruction(
 
     if rows_affected == 0 {
         let message = format!("Instruction with ID: {} not found", instruction_id);
-        return HttpResponse::NotFound().json(json!({
-            "status": "fail",
-            "message": message
-        }));
+        return HttpResponse::NotFound().json(json!(message));
     }
 
     HttpResponse::NoContent().finish()

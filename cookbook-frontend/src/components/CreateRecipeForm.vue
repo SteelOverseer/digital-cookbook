@@ -27,12 +27,6 @@
               <v-btn variant="tonal" @click="state.ingredients.push('')">+</v-btn>
             </div>
           </div>
-          {{ state.ingredients }}
-          <!-- <v-textarea
-            v-model="state.ingredients"
-            label="Ingredients"
-          >
-        </v-textarea> -->
           <!-- <v-list two-line>
             <draggable v-model="state.items">
               <template v-for="(v, i) in state.items" :key="v.ID">
@@ -83,7 +77,6 @@
 import { reactive } from 'vue';
 import CreateRecipeModel from '../models/CreateRecipeModel';
 import RecipeService from '../services/RecipeService';
-import { stat } from 'fs';
 import CreateIngredientModel from '../models/Ingredient/CreateIngredientModel';
 import RecipeModel from '../models/Recipe/RecipeModel';
 import IngredientService from '../services/IngredientService';
@@ -131,13 +124,13 @@ const submit = async () => {
     name: state.name,
     category_id: state.category,
     notes: state.notes,
-    ingredients: state.ingredients
   }
 
   try {
     let resp = await RecipeService.createRecipe(request);
     console.log('resp:', resp)
-    let recipe:RecipeModel = resp.data.recipe
+    let recipe:RecipeModel = resp.data
+
     state.ingredients.forEach(async ingredient => {
       if(ingredient != null && ingredient != "" && ingredient != " ") {
         let createIngredientReq:CreateIngredientModel = {
@@ -149,8 +142,8 @@ const submit = async () => {
       }
     });
   } catch (error) {
-      console.log("ERROR", error.response.data.message)
-      throw(new Error(error.response.data.message))
+      console.log("ERROR", error.response.data)
+      throw(new Error(error.response.data))
   }
   
 }

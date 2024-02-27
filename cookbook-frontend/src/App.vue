@@ -124,24 +124,25 @@ onErrorCaptured((error) => {
 const getCategories = async () => {
   try {
     const categoriesResponse = await CategoryService.getAll();
-    if(categoriesResponse.data.status == "success") {
-        state.categories = categoriesResponse.data.categories
+    console.log('categoriesResponse', categoriesResponse)
+    if(categoriesResponse.status == 200) {
+        state.categories = categoriesResponse.data
     }
   } catch (error) {
-      console.log("ERROR", error.response.data.message)
-      throw(new Error(error.response.data.message))
+      console.log("ERROR", error.response.data)
+      throw(new Error(error.response.data))
   }
 }
 
 const getRecipes = async () => {
   try {
     const response = await RecipeService.getAll();
-    if(response.data.status == "success") {
-        state.recipes = response.data.recipes
+    if(response.status == 200) {
+        state.recipes = response.data
     }
   } catch (error) {
-      console.log("ERROR", error.response.data.message)
-      throw(new Error(error.response.data.message))
+      console.log("ERROR", error.response.data)
+      throw(new Error(error.response.data))
   }
 }
 
