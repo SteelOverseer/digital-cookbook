@@ -82,6 +82,7 @@ import RecipeModel from '../models/Recipe/RecipeModel';
 import IngredientService from '../services/IngredientService';
 
 const props = defineProps(['categories'])
+const emit = defineEmits(['saved'])
 
 const state = reactive({
   name: "",
@@ -116,10 +117,6 @@ const state = reactive({
 });
 
 const submit = async () => {
-  console.log("IN SUBMIT")
-  console.log(state.category)
-  console.log('state:', state)
-
   const request:CreateRecipeModel =  {
     name: state.name,
     category_id: state.category,
@@ -128,11 +125,11 @@ const submit = async () => {
 
   try {
     let resp = await RecipeService.createRecipe(request);
-    console.log('resp:', resp)
     let recipe:RecipeModel = resp.data
 
-    state.ingredients.forEach(async ingredient => {
+    Promise.all(state.ingredients.map(async ingredient => {
       if(ingredient != null && ingredient != "" && ingredient != " ") {
+        console.log("ingredient", ingredient)
         let createIngredientReq:CreateIngredientModel = {
           recipe_id: recipe.id,
           ingredient_text: ingredient
@@ -140,7 +137,8 @@ const submit = async () => {
 
         await IngredientService.createIngredient(createIngredientReq);
       }
-    });
+    }));
+    emit("saved", recipe);
   } catch (error) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))

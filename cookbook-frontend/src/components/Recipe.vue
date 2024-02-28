@@ -4,7 +4,9 @@
     <v-row>
       <v-col>
         <h3>Ingredients</h3>
-        <div></div>
+        <div v-for="ingredient in recipe.ingredients" :key="ingredient.id">
+          {{ ingredient.ingredient_text }}
+        </div>
         <!-- <ul>
           <li v-for="(ingredient, index) in recipe.ingredients" :key="index">{{ ingredient }}</li>
         </ul> -->
@@ -23,7 +25,11 @@
 </template>
   
 <script setup lang="ts">
-defineProps(['recipe'])
+import RecipeModel from '../models/Recipe/RecipeModel';
+
+defineProps<{
+  recipe:RecipeModel
+}>()
 
 </script>
 

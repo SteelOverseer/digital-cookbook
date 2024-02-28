@@ -8,7 +8,7 @@ pub async fn get_categories(
 ) -> impl Responder {
     let query_result = sqlx::query_as!(
         CategoryModel,
-        "SELECT * FROM categories ORDER by id",
+        "SELECT * FROM categories ORDER by name",
     )
     .fetch_all(&data.db)
     .await;

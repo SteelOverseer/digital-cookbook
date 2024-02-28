@@ -12,17 +12,21 @@
     <v-row no-gutters>
       <v-col cols="2">
         <v-btn variant="tonal" @click="state.showNewCategoryDialog = true">New Category</v-btn>
-        <v-btn variant="tonal" @click="state.showNewRecipeDialog = true">New Recipe</v-btn>
+        <v-btn variant="tonal" @click="state.createNewRecipe = true">New Recipe</v-btn>
         <v-sheet class="pa-2 ma-2" id="categories-accordian">
-          <Categories :data="state.accordianData" @select-recipe="(recipe) => state.selectedRecipe = recipe" />
+          <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
         </v-sheet>
       </v-col>
       <v-col>
         <v-sheet class="pa-2 ma-2">
           Select a recipe on the left or create one to get started
           selected recipe: {{ state.selectedRecipe }}
-          <CreateRecipeForm :categories="state.categories" />
-          <!-- <Recipe :recipe="state.selectedRecipe" /> -->
+          <CreateRecipeForm 
+            v-if="state.createNewRecipe" 
+            :categories="state.categories"
+            @saved="(recipe) => onNewRecipeSaved(recipe)"
+           />
+          <Recipe v-if="!state.createNewRecipe" :recipe="state.selectedRecipe" />
         </v-sheet>
       </v-col>
     </v-row>
@@ -100,26 +104,50 @@ import CategoryModel from './models/Category/CategoryModel';
 import RecipeService from './services/RecipeService';
 import RecipeModel from './models/Recipe/RecipeModel';
 import Recipe from './components/Recipe.vue'
+import IngredientService from './services/IngredientService';
 
 const state = reactive({
   categories: [] as CategoryModel[],
   recipes: [] as RecipeModel[],
 	showToast: false,
 	message: "",
-  accordianData: [],
+  accordianData: [] as any,
   loading: true,
   showNewCategoryDialog: false,
   showNewRecipeDialog: false,
   newCategoryName: "",
-  selectedRecipe: {} as RecipeModel
+  selectedRecipe: {} as RecipeModel,
+  createNewRecipe: true
 });
 
 onErrorCaptured((error) => {
-  console.log("LOOK MA I THREW")
-  console.log(error)
   state.message = error.message;
   state.showToast = true;
 })
+
+const onNewRecipeSaved = (recipe:RecipeModel) => {
+  state.accordianData
+    .find((dataItem: { id: string, name: string, recipes: RecipeModel[] }) => dataItem.id == recipe.category_id)
+    .recipes.push(recipe)
+  onRecipeSelected(recipe)
+}
+
+const onRecipeSelected = async (recipe:RecipeModel) => {
+  recipe.ingredients = await getRecipeIngredients(recipe.id)
+  state.selectedRecipe = recipe
+  state.createNewRecipe = false
+}
+
+const getRecipeIngredients = async (recipe_id:string) => {
+  try {
+    const ingredientsResponse = await IngredientService.getRecipeIngredients(recipe_id);
+    console.log("ingredientResponse", ingredientsResponse)
+    return ingredientsResponse.data
+  } catch (error) {
+      console.log("ERROR", error.response.data)
+      throw(new Error(error.response.data))
+  }
+}
 
 const getCategories = async () => {
   try {

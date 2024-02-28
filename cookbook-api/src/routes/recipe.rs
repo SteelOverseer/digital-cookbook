@@ -7,14 +7,9 @@ pub async fn get_recipes(
     opts: web::Query<FilterOptions>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    let limit = opts.limit.unwrap_or(10);
-    let offset = (opts.page.unwrap_or(1) - 1) * limit;
-
     let result = sqlx::query_as!(
         RecipeModel,
-        "SELECT * FROM recipes ORDER BY id LIMIT $1 OFFSET $2",
-        limit as i32,
-        offset as i32
+        "SELECT * FROM recipes ORDER BY name"
     )
     .fetch_all(&data.db)
     .await;
