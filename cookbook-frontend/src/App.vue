@@ -105,6 +105,7 @@ import RecipeService from './services/RecipeService';
 import RecipeModel from './models/Recipe/RecipeModel';
 import Recipe from './components/Recipe.vue'
 import IngredientService from './services/IngredientService';
+import InstructionService from './services/InstructionService';
 
 const state = reactive({
   categories: [] as CategoryModel[],
@@ -134,6 +135,7 @@ const onNewRecipeSaved = (recipe:RecipeModel) => {
 
 const onRecipeSelected = async (recipe:RecipeModel) => {
   recipe.ingredients = await getRecipeIngredients(recipe.id)
+  recipe.instructions = await getRecipeInstructions(recipe.id)
   state.selectedRecipe = recipe
   state.createNewRecipe = false
 }
@@ -141,8 +143,17 @@ const onRecipeSelected = async (recipe:RecipeModel) => {
 const getRecipeIngredients = async (recipe_id:string) => {
   try {
     const ingredientsResponse = await IngredientService.getRecipeIngredients(recipe_id);
-    console.log("ingredientResponse", ingredientsResponse)
     return ingredientsResponse.data
+  } catch (error) {
+      console.log("ERROR", error.response.data)
+      throw(new Error(error.response.data))
+  }
+}
+
+const getRecipeInstructions = async (recipe_id:string) => {
+  try {
+    const instructionsResponse = await InstructionService.getRecipeInstructions(recipe_id)
+    return instructionsResponse.data;
   } catch (error) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
@@ -152,7 +163,6 @@ const getRecipeIngredients = async (recipe_id:string) => {
 const getCategories = async () => {
   try {
     const categoriesResponse = await CategoryService.getAll();
-    console.log('categoriesResponse', categoriesResponse)
     if(categoriesResponse.status == 200) {
         state.categories = categoriesResponse.data
     }

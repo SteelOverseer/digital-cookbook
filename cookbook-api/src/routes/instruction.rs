@@ -10,7 +10,7 @@ pub async fn get_instructions_for_recipe(
     let recipe_id = path.into_inner();
     let result = sqlx::query_as!(
         InstructionModel,
-        "SELECT * FROM instructions WHERE recipe_id = $1 ORDER BY id",
+        "SELECT * FROM instructions WHERE recipe_id = $1 ORDER BY step_order",
         recipe_id
     )
     .fetch_all(&data.db)
@@ -18,16 +18,13 @@ pub async fn get_instructions_for_recipe(
 
     match result {
         Ok(instructions) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "instructions": instructions
-            });
+            let response = serde_json::json!(instructions);
             return HttpResponse::Ok().json(response);
         }
         Err(_) => {
             let message = format!("Instructions with Recipe ID: {} not found", recipe_id);
             return HttpResponse::NotFound()
-                .json(serde_json::json!({"status": "fail","message": message}));
+                .json(serde_json::json!(message));
         }
 
     }
@@ -39,27 +36,22 @@ pub async fn create_instruction(
 ) -> impl Responder {
     let result = sqlx::query_as!(
         InstructionModel,
-        "INSERT INTO instructions (recipe_id, instruction_text) VALUES ($1, $2) RETURNING *",
+        "INSERT INTO instructions (recipe_id, instruction_text, step_order) VALUES ($1, $2, $3) RETURNING *",
         body.recipe_id,
-        body.instruction_text
+        body.instruction_text,
+        body.step_order
     )
     .fetch_one(&data.db)
     .await;
 
     match result {
         Ok(instruction) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "instruction": instruction
-            });
+            let response = serde_json::json!(instruction);
 
             return HttpResponse::Ok().json(response);
         }
         Err(e) => {
-            return HttpResponse::InternalServerError().json(serde_json::json!({
-                "status": "error",
-                "message": format!("{:?}", e)
-            }))
+            return HttpResponse::InternalServerError().json(serde_json::json!(format!("{:?}", e)))
         }
     }
 }
@@ -81,16 +73,16 @@ pub async fn edit_instruction(
     if result.is_err() {
         let message = format!("Instruction with ID: {} not found", instruction_id);
         return HttpResponse::NotFound()
-                .json(serde_json::json!({
-                    "status": "fail",
-                    "message": message
-                }))
+                .json(serde_json::json!(message))
     }
+
+    let instruction = result.unwrap();
 
     let result = sqlx::query_as!(
         InstructionModel,
-        "UPDATE instructions SET instruction_text = $1 WHERE id = $2 RETURNING *",
-        body.instruction_text.to_owned(),
+        "UPDATE instructions SET instruction_text = $1, step_order = $2 WHERE id = $3 RETURNING *",
+        body.instruction_text.to_owned().unwrap_or(instruction.instruction_text),
+        body.step_order.to_owned().unwrap_or(instruction.step_order),
         instruction_id
     )
     .fetch_one(&data.db)
@@ -98,20 +90,14 @@ pub async fn edit_instruction(
 
     match result {
         Ok(instruction) => {
-            let response = serde_json::json!({
-                "status": "success",
-                "instruction": instruction
-            });
+            let response = serde_json::json!(instruction);
 
             return HttpResponse::Ok().json(response);
         }
         Err(err) => {
             let message = format!("Error: {:?}", err);
             return HttpResponse::InternalServerError()
-                .json(serde_json::json!({
-                    "status": "error",
-                    "message": message
-                }));
+                .json(serde_json::json!(message));
 
         }
     }

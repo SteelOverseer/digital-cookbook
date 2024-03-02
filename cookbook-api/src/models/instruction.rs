@@ -7,16 +7,19 @@ use uuid::Uuid;
 pub struct InstructionModel {
     pub id: Uuid,
     pub recipe_id: Uuid,
-    pub instruction_text: String
+    pub instruction_text: String,
+    pub step_order: i32
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateInstructionSchema {
     pub recipe_id: Uuid,
-    pub instruction_text: String
+    pub instruction_text: String,
+    pub step_order: i32
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateInstructionSchema {
-    pub instruction_text: String
+    pub instruction_text: Option<String>,
+    pub step_order: Option<i32>
 }

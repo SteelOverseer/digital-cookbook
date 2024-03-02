@@ -5,11 +5,8 @@
       <v-col>
         <h3>Ingredients</h3>
         <div v-for="ingredient in recipe.ingredients" :key="ingredient.id">
-          {{ ingredient.ingredient_text }}
+          - {{ ingredient.ingredient_text }}
         </div>
-        <!-- <ul>
-          <li v-for="(ingredient, index) in recipe.ingredients" :key="index">{{ ingredient }}</li>
-        </ul> -->
       </v-col>
       <v-col>
         <h3>Notes</h3>
@@ -18,7 +15,10 @@
     </v-row>
     <v-row>
       <v-col>
-        <h3>Steps</h3>
+        <h3>Instructions</h3>
+        <div v-for="instruction in recipe.instructions" :key="instruction.id">
+          {{ instruction.instruction_text }}
+        </div>
       </v-col>
     </v-row>
   </v-container>
