@@ -13,21 +13,19 @@
       <v-col cols="2">
         <v-btn variant="tonal" @click="state.showNewCategoryDialog = true">New Category</v-btn>
         <v-btn variant="tonal" @click="state.createNewRecipe = true">New Recipe</v-btn>
-        <v-sheet class="pa-2 ma-2" id="categories-accordian">
+        <!-- <v-sheet class="pa-2 ma-2" id="categories-accordian"> -->
           <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
-        </v-sheet>
+        <!-- </v-sheet> -->
       </v-col>
       <v-col>
-        <v-sheet class="pa-2 ma-2">
-          Select a recipe on the left or create one to get started
-          selected recipe: {{ state.selectedRecipe }}
+        <!-- <v-sheet class="pa-2 ma-2"> -->
           <CreateRecipeForm 
             v-if="state.createNewRecipe" 
             :categories="state.categories"
             @saved="(recipe) => onNewRecipeSaved(recipe)"
            />
           <Recipe v-if="!state.createNewRecipe" :recipe="state.selectedRecipe" />
-        </v-sheet>
+        <!-- </v-sheet> -->
       </v-col>
     </v-row>
     <v-snackbar
@@ -227,8 +225,7 @@ fetchData();
 
 <style scoped>
 #app-container {
-  /* background-color: red; */
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 
 #header {

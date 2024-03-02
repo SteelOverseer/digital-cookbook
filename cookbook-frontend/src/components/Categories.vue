@@ -1,14 +1,19 @@
 <template>
-  <v-expansion-panels variant="accordion">
+  <v-expansion-panels variant="accordion" id="categories-accordian">
     <v-expansion-panel 
       v-for="category in data"
       :key="category.id"
     >
-      <v-expansion-panel-title>{{ category.name }}</v-expansion-panel-title>
+      <v-expansion-panel-title class="expansion-title">
+        <h3>
+          {{ category.name }}
+        </h3>
+      </v-expansion-panel-title>
       <v-expansion-panel-text
         v-for="recipe in category.recipes"
         :key="recipe.id"
         @click="$emit('selectRecipe', recipe)"
+        class="expansion-item"
       >
         {{ recipe.name }}
       </v-expansion-panel-text>
@@ -23,7 +28,14 @@ defineEmits(["selectRecipe"]);
 </script>
 
 <style scoped>
-/* #categories-accordian {
-    background-color: #e6ab0b
-} */
+#categories-accordian {
+  width: 300px;
+}
+
+.expansion-title, .expansion-item {
+  background-color: #f6eee3;
+}
+.expansion-item {
+  cursor: pointer;
+}
 </style>

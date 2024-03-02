@@ -1,7 +1,7 @@
 <template>
-  <v-container>
+  <v-container id="create-recipe-form">
     <v-row no-gutters>
-      <v-col>Create Recipe</v-col>
+      <h2>Create Recipe</h2>
     </v-row>
     <v-row>
       <v-col>
@@ -17,50 +17,73 @@
             item-value="id"
             v-model="state.category"
           ></v-select>
-          <div id="ingredients">
-            <div v-for="(ingredient, index) in state.ingredients" class="ingredient-row">
-              <v-text-field
-                v-model="state.ingredients[index]"
-                clearable 
-                label="Ingredient"
-              ></v-text-field>
-              <v-btn variant="tonal" @click="state.ingredients.push('')">+</v-btn>
-            </div>
-          </div>
-          <draggable 
-            v-model="state.instructions"
-            id="instructions-list"
-            item-key="element">
-            <template #item="{element, index}">
-              <div class="drag-item">
-                <v-text-field
-                  v-model="state.instructions[index]"
-                  clearable
-                ></v-text-field>
+          <v-row>
+            <v-col>
+              <div id="ingredients">
+                <div id="ingredients-header">
+                  <h3>Ingredients</h3>
+                  <v-btn variant="tonal" @click="state.ingredients.push('')">New Ingredient</v-btn>
+                </div>
+                <div v-for="(ingredient, index) in state.ingredients" class="ingredient-row">
+                  <v-text-field
+                    v-model="state.ingredients[index]"
+                    clearable 
+                    label="Ingredient"
+                  ></v-text-field>
+                </div>
               </div>
-            </template>
-            <template #header>
-              <div id="instructions-header">
-                <h3>Instructions</h3>
-                <v-btn @click="state.instructions.push('')">Add Instruction</v-btn>
-              </div>
-            </template>
-          </draggable>
+            </v-col>
+            <v-col>
+              <draggable 
+                v-model="state.instructions"
+                id="instructions-list"
+                item-key="element"
+              >
+                <template #item="{element, index}">
+                  <div class="drag-item">
+                    <v-text-field
+                      v-model="state.instructions[index]"
+                      clearable
+                      label="Instruction"
+                    ></v-text-field>
+                  </div>
+                </template>
+                <template #header>
+                  <div id="instructions-header">
+                    <h3>Instructions</h3>
+                    <v-btn
+                      variant="tonal"
+                      id="add-instruction-button" 
+                      @click="state.instructions.push('')"
+                    >
+                      New Instruction
+                    </v-btn>
+                  </div>
+                </template>
+              </draggable>
+            </v-col>
+          </v-row>
+          
+          
           <v-textarea
             v-model="state.notes"
             label="Notes"
           ></v-textarea>
-          <v-btn
-            class="me-4"
-            @click="submit"
-          >
-            submit
-          </v-btn>
-          <v-btn
-            @click="clear"
-          >
-            clear
-          </v-btn>
+          <div id="new-recipe-footer">
+            <v-btn
+              id="submit-button"
+              class="me-4"
+              @click="submit"
+            >
+              Submit
+            </v-btn>
+            <v-btn
+              id="clear-button"
+              @click="clear"
+            >
+              Clear
+            </v-btn>
+          </div>
         </form>
       </v-col>
     </v-row>
@@ -127,7 +150,6 @@ const submit = async () => {
           recipe_id: recipe.id,
           step_order: index
         }
-        console.log('createinstructionreq', createInstructionReq)
         await InstructionService.createInstruction(createInstructionReq)
       }
     }))
@@ -142,7 +164,10 @@ const submit = async () => {
 </script>
 
 <style scoped>
-.ingredient-row {
+#create-recipe-form {
+  background-color: #f6eee3; 
+}
+.ingredient-row, .drag-item {
   display: flex;
   flex-direction: row;
 }
@@ -151,9 +176,28 @@ const submit = async () => {
   
 }
 
-#instructions-header {
+#instructions-header, #ingredients-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 5px;
 }
 
+#new-recipe-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+#submit-button {
+  background-color: lightgreen;
+}
+
+#clear-button {
+  background-color: lightcoral;
+}
+
+#add-instruction-button {
+
+}
 </style>
