@@ -29,7 +29,7 @@ defineEmits(["selectRecipe"]);
 
 <style scoped>
 #categories-accordian {
-  width: 300px;
+  /* width: 300px; */
 }
 
 .expansion-title, .expansion-item {

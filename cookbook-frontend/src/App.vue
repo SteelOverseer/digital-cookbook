@@ -2,19 +2,42 @@
   <v-container id="app-container">
     <v-row no-gutters id="header">
       <v-col>
-		<!-- <v-toolbar style="background-color: grey; color:red">
-			<v-app-bar-nav-icon></v-app-bar-nav-icon>
-			<v-toolbar-title>Schultz Family Cookbook</v-toolbar-title>
-		</v-toolbar> -->
-        <h1>Schultz Family Cookbook</h1>
+        <v-toolbar class="hidden-md-and-up">
+          <v-app-bar-nav-icon></v-app-bar-nav-icon>
+          <v-toolbar-title>Schultz Family Cookbook</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon>
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <h1 class="hidden-sm-and-down">Schultz Family Cookbook</h1>
       </v-col>
     </v-row>
     <v-row no-gutters>
-      <v-col cols="2">
-        <v-btn variant="tonal" @click="state.showNewCategoryDialog = true">New Category</v-btn>
-        <v-btn variant="tonal" @click="state.createNewRecipe = true">New Recipe</v-btn>
-        <!-- <v-sheet class="pa-2 ma-2" id="categories-accordian"> -->
+      <v-col 
+        cols="3" 
+        sm="2"
+        class="hidden-sm-and-down"
+        id="action-column"
+        style="border: 1px solid black;"
+      >
+        <div id="action-buttons">
+          <v-row>
+            <v-col>
+              <v-btn @click="state.showNewCategoryDialog = true">New Category</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn @click="state.createNewRecipe = true">New Recipe</v-btn>
+            </v-col>
+          </v-row>
+        </div>
+        <!-- <v-row>
+        </v-row> -->
+        <!-- <v-row> -->
+          Search bar here
           <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
+        <!-- </v-row> -->
+        <!-- <v-sheet class="pa-2 ma-2" id="categories-accordian"> -->
         <!-- </v-sheet> -->
       </v-col>
       <v-col>
@@ -50,7 +73,7 @@
     persistent
     width="300"
   >
-    <v-card>
+    <v-card style="background-color: #f6eee3;">
       <v-card-title>
         <span class="text-h5">Create Category</span>
       </v-card-title>
@@ -226,13 +249,25 @@ fetchData();
 <style scoped>
 #app-container {
   /* border: 1px solid black; */
+  #header {
+    text-align: center;
+  }
+
+  #action-column {
+    margin-right: 10px;
+
+    #action-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+  
+      button {
+        width: -webkit-fill-available;
+        background-color: #f6eee3;
+      }
+    }
+  }
+
 }
 
-#header {
-  text-align: center;
-}
-
-#categories-accordian {
-    /* background-color: #e6ab0b */
-}
 </style>
