@@ -1,6 +1,12 @@
 <template>
-  <h2>{{ recipe.name }}</h2>
-  <v-container>
+  <v-container id="view-recipe-form">
+    <v-row id="recipe-header">
+      <div id="name-panel">
+        <h2>{{ recipe.name }}</h2>
+        <v-icon icon="mdi-star-outline" />
+      </div>
+      <v-icon icon="mdi-pencil" @click="editRecipe" />
+    </v-row>
     <v-row>
       <v-col>
         <h3>Ingredients</h3>
@@ -34,5 +40,18 @@ defineProps<{
 </script>
 
 <style scoped>
+#view-recipe-form {
+  background-color: #f6eee3; 
 
+  #recipe-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    #name-panel {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+}
 </style>

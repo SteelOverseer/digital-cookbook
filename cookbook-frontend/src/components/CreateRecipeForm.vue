@@ -18,6 +18,7 @@
             v-model="state.category"
           ></v-select>
           <v-row>
+            {{ props.recipe }}
             <v-col>
               <div id="ingredients">
                 <div id="ingredients-header">
@@ -63,8 +64,6 @@
               </draggable>
             </v-col>
           </v-row>
-          
-          
           <v-textarea
             v-model="state.notes"
             label="Notes"
@@ -102,7 +101,7 @@ import draggable from 'vuedraggable'
 import CreateInstructionModel from '../models/Instruction/CreateInstructionModel'
 import InstructionService from '../services/InstructionService';
 
-const props = defineProps(['categories'])
+const props = defineProps(['categories', 'recipe', 'isEdit'])
 const emit = defineEmits(['saved'])
 
 const state = reactive({

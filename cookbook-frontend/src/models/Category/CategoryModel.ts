@@ -1,4 +1,9 @@
-export default interface CategoryModel {
-    id: string,
+export default class CategoryModel {
+    id: string
     name: string
+
+    constructor() {
+        this.id = "",
+        this.name = ""
+    }
 }

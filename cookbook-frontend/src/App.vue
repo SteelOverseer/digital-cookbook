@@ -4,13 +4,13 @@
       <v-col>
         <v-toolbar class="hidden-md-and-up">
           <v-app-bar-nav-icon></v-app-bar-nav-icon>
-          <v-toolbar-title>Schultz Family Cookbook</v-toolbar-title>
+          <v-toolbar-title >Schultz Family Cookbook</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon>
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </v-toolbar>
-        <h1 class="hidden-sm-and-down">Schultz Family Cookbook</h1>
+        <h1 class="hidden-sm-and-down" style="cursor: pointer;" @click="state.currentComponent = Home">Schultz Family Cookbook</h1>
       </v-col>
     </v-row>
     <v-row no-gutters>
@@ -27,28 +27,28 @@
               <v-btn @click="state.showNewCategoryDialog = true">New Category</v-btn>
             </v-col>
             <v-col>
-              <v-btn @click="state.createNewRecipe = true">New Recipe</v-btn>
+              <v-btn @click="state.currentComponent = CreateRecipeForm">New Recipe</v-btn>
             </v-col>
           </v-row>
         </div>
-        <!-- <v-row>
-        </v-row> -->
-        <!-- <v-row> -->
-          Search bar here
+          <!-- <v-text-field
+            id="recipe-search"
+            label="Search Recipes"
+          >
+            <template v-slot:prepend>
+              <v-icon>
+                mdi-magnify
+              </v-icon>
+            </template>
+          </v-text-field> -->
           <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
-        <!-- </v-row> -->
-        <!-- <v-sheet class="pa-2 ma-2" id="categories-accordian"> -->
-        <!-- </v-sheet> -->
       </v-col>
       <v-col>
-        <!-- <v-sheet class="pa-2 ma-2"> -->
-          <CreateRecipeForm 
-            v-if="state.createNewRecipe" 
-            :categories="state.categories"
+          <component 
+            :is="state.currentComponent"
+            v-bind="currentProps"
             @saved="(recipe) => onNewRecipeSaved(recipe)"
-           />
-          <Recipe v-if="!state.createNewRecipe" :recipe="state.selectedRecipe" />
-        <!-- </v-sheet> -->
+          />
       </v-col>
     </v-row>
     <v-snackbar
@@ -117,9 +117,10 @@
 </template>
 
 <script setup lang="ts">
+import Home from './components/Home.vue'
 import Categories from './components/Categories.vue'
 import CreateRecipeForm from './components/CreateRecipeForm.vue'
-import { onErrorCaptured, reactive, ref } from 'vue';
+import { computed, onErrorCaptured, reactive } from 'vue';
 import CategoryService from './services/CategoryService';
 import CategoryModel from './models/Category/CategoryModel';
 import RecipeService from './services/RecipeService';
@@ -139,8 +140,20 @@ const state = reactive({
   showNewRecipeDialog: false,
   newCategoryName: "",
   selectedRecipe: {} as RecipeModel,
-  createNewRecipe: true
+  currentComponent: Home
 });
+
+const currentProps = computed(() => {
+  if(state.currentComponent.__name == 'CreateRecipeForm') {
+    return { 
+      categories: state.categories,
+      recipe: new RecipeModel(),
+      isEdit: false
+    }
+  } else if (state.currentComponent.__name == 'Recipe') {
+    return { recipe: state.selectedRecipe }
+  }
+})
 
 onErrorCaptured((error) => {
   state.message = error.message;
@@ -158,7 +171,7 @@ const onRecipeSelected = async (recipe:RecipeModel) => {
   recipe.ingredients = await getRecipeIngredients(recipe.id)
   recipe.instructions = await getRecipeInstructions(recipe.id)
   state.selectedRecipe = recipe
-  state.createNewRecipe = false
+  state.currentComponent = Recipe
 }
 
 const getRecipeIngredients = async (recipe_id:string) => {
@@ -265,6 +278,11 @@ fetchData();
         width: -webkit-fill-available;
         background-color: #f6eee3;
       }
+    }
+
+    #recipe-search {
+      border: 1px solid black;
+      background-color: #f6eee3;
     }
   }
 
