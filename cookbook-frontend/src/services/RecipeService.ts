@@ -10,6 +10,10 @@ class RecipeService {
 	createRecipe(createRecipeRequest: CreateRecipeModel): Promise<ResponseModel> {
 		return http.post("/recipe", createRecipeRequest)
 	}
+
+	editRecipe(editRecipeRequest: CreateRecipeModel, recipeID: string): Promise<ResponseModel> {
+		return http.patch(`/recipe/${recipeID}`, editRecipeRequest)
+	}
 }
 
 export default new RecipeService();

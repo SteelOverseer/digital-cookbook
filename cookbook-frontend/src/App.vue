@@ -27,7 +27,7 @@
               <v-btn @click="state.showNewCategoryDialog = true">New Category</v-btn>
             </v-col>
             <v-col>
-              <v-btn @click="state.currentComponent = CreateRecipeForm">New Recipe</v-btn>
+              <v-btn @click="state.selectedRecipe = new RecipeModel(); state.currentComponent = CreateRecipeForm;">New Recipe</v-btn>
             </v-col>
           </v-row>
         </div>
@@ -48,6 +48,8 @@
             :is="state.currentComponent"
             v-bind="currentProps"
             @saved="(recipe) => onNewRecipeSaved(recipe)"
+            @editRecipe="onEditRecipe()"
+            @cancelEdit="cancelEdit()"
           />
       </v-col>
     </v-row>
@@ -139,37 +141,48 @@ const state = reactive({
   showNewCategoryDialog: false,
   showNewRecipeDialog: false,
   newCategoryName: "",
-  selectedRecipe: {} as RecipeModel,
-  currentComponent: Home
+  selectedRecipe: new RecipeModel(),
+  currentComponent: Home,
+  editRecipe: false
 });
 
 const currentProps = computed(() => {
   if(state.currentComponent.__name == 'CreateRecipeForm') {
     return { 
       categories: state.categories,
-      recipe: new RecipeModel(),
-      isEdit: false
+      recipe: state.selectedRecipe,
+      isEdit: state.editRecipe
     }
   } else if (state.currentComponent.__name == 'Recipe') {
     return { recipe: state.selectedRecipe }
   }
 })
 
+const cancelEdit = () => {
+  state.editRecipe = false
+  state.currentComponent = Recipe
+}
+
 onErrorCaptured((error) => {
   state.message = error.message;
   state.showToast = true;
 })
 
+const onEditRecipe = () => {
+  state.editRecipe = true
+  state.currentComponent = CreateRecipeForm
+}
+
 const onNewRecipeSaved = (recipe:RecipeModel) => {
-  state.accordianData
-    .find((dataItem: { id: string, name: string, recipes: RecipeModel[] }) => dataItem.id == recipe.category_id)
-    .recipes.push(recipe)
+  state.accordianData = [];
+  fetchData()
   onRecipeSelected(recipe)
 }
 
 const onRecipeSelected = async (recipe:RecipeModel) => {
   recipe.ingredients = await getRecipeIngredients(recipe.id)
   recipe.instructions = await getRecipeInstructions(recipe.id)
+  state.editRecipe = false
   state.selectedRecipe = recipe
   state.currentComponent = Recipe
 }

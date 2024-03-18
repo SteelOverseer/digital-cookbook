@@ -5,7 +5,7 @@
         <h2>{{ recipe.name }}</h2>
         <v-icon icon="mdi-star-outline" />
       </div>
-      <v-icon icon="mdi-pencil" @click="editRecipe" />
+      <v-icon icon="mdi-pencil" @click="$emit('editRecipe')" />
     </v-row>
     <v-row>
       <v-col>
@@ -36,6 +36,8 @@ import RecipeModel from '../models/Recipe/RecipeModel';
 defineProps<{
   recipe:RecipeModel
 }>()
+
+// const emit = defineEmits(['editRecipe'])
 
 </script>
 
