@@ -50,6 +50,8 @@
             @saved="(recipe) => onNewRecipeSaved(recipe)"
             @editRecipe="onEditRecipe()"
             @cancelEdit="cancelEdit()"
+            @toggleFavorite="toggleFavorite()"
+            @selectRecipe="onRecipeSelected($event)"
           />
       </v-col>
     </v-row>
@@ -130,6 +132,7 @@ import RecipeModel from './models/Recipe/RecipeModel';
 import Recipe from './components/Recipe.vue'
 import IngredientService from './services/IngredientService';
 import InstructionService from './services/InstructionService';
+import CreateRecipeModel from './models/Recipe/CreateRecipeModel';
 
 const state = reactive({
   categories: [] as CategoryModel[],
@@ -146,6 +149,26 @@ const state = reactive({
   editRecipe: false
 });
 
+// const accordianData = computed(() => {
+//   const data = [];
+//   state.categories.forEach(category => {
+//     var recipes = state.recipes.filter((recipe) => { return recipe.category_id == category.id})
+//     data.push(
+//       {
+//         ...category,
+//         recipes: recipes
+//       }
+      
+//     )
+//   });
+
+//   return data;
+// })
+
+const favoriteRecipes = computed(() => {
+  return state.recipes.filter((recipe) => {return recipe.is_favorite})
+})
+
 const currentProps = computed(() => {
   if(state.currentComponent.__name == 'CreateRecipeForm') {
     return { 
@@ -155,8 +178,28 @@ const currentProps = computed(() => {
     }
   } else if (state.currentComponent.__name == 'Recipe') {
     return { recipe: state.selectedRecipe }
+  } else if (state.currentComponent.__name == 'Home') {
+    return {
+      recipes: favoriteRecipes.value
+    }
   }
 })
+
+const toggleFavorite = async () => {
+  try {
+    const toggleFacoriteReq: CreateRecipeModel =  {
+      is_favorite: !state.selectedRecipe.is_favorite
+    }
+    const resp =  await RecipeService.editRecipe(toggleFacoriteReq, state.selectedRecipe.id)
+    const updateRecipe = resp.data;
+    state.selectedRecipe.is_favorite = updateRecipe.is_favorite
+    let recipe = state.recipes.find((recipe) => {return recipe.id == updateRecipe.id})
+    recipe.is_favorite = updateRecipe.is_favorite
+  } catch (error) {
+      console.log("ERROR", error.response.data)
+      throw(new Error(error.response.data))
+  }
+}
 
 const cancelEdit = () => {
   state.editRecipe = false

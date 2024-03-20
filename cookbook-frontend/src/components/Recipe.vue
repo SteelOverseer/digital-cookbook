@@ -3,7 +3,17 @@
     <v-row id="recipe-header">
       <div id="name-panel">
         <h2>{{ recipe.name }}</h2>
-        <v-icon icon="mdi-star-outline" />
+        <v-icon
+          v-if="!recipe.is_favorite"
+          icon="mdi-star-outline" 
+          @click="$emit('toggleFavorite')"
+        />
+        <v-icon
+          v-if="recipe.is_favorite"
+          style="color: gold;"
+          icon="mdi-star" 
+          @click="$emit('toggleFavorite')"
+        />
       </div>
       <v-icon icon="mdi-pencil" @click="$emit('editRecipe')" />
     </v-row>
@@ -37,8 +47,6 @@ defineProps<{
   recipe:RecipeModel
 }>()
 
-// const emit = defineEmits(['editRecipe'])
-
 </script>
 
 <style scoped>
@@ -49,10 +57,12 @@ defineProps<{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 
     #name-panel {
       display: flex;
       flex-direction: row;
+      align-items: center;
     }
   }
 }

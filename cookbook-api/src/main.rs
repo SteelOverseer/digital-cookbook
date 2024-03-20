@@ -27,7 +27,7 @@ use cookbook_api::routes::{
     health_check,
     remove_tag,
     get_ingredients_for_recipe,
-    edit_ingredient
+    edit_ingredient,
 };
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;

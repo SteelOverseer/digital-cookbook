@@ -129,10 +129,11 @@ pub async fn edit_recipe(
 
     let result = sqlx::query_as!(
         RecipeModel,
-        "UPDATE recipes SET category_id = $1, name = $2, notes = $3 WHERE id = $4 RETURNING *",
+        "UPDATE recipes SET category_id = $1, name = $2, notes = $3, is_favorite = $4 WHERE id = $5 RETURNING *",
         body.category_id.to_owned().unwrap_or(recipe.category_id),
         body.name.to_owned().unwrap_or(recipe.name),
         body.notes.to_owned().unwrap_or(recipe.notes.unwrap()),
+        body.is_favorite.to_owned().unwrap_or(recipe.is_favorite),
         recipe_id
     )
     .fetch_one(&data.db)
