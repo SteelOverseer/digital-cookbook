@@ -110,7 +110,6 @@ import CategoryModel from '../models/Category/CategoryModel';
 import IngredientModel from '../models/Ingredient/IngredientModel';
 import InstructionModel from '../models/Instruction/InstructionModel';
 
-// const props = defineProps(['categories', 'recipe', 'isEdit'])
 const props = defineProps<{
   categories: CategoryModel,
   recipe: RecipeModel,
@@ -121,8 +120,8 @@ const emit = defineEmits(['saved', 'cancelEdit'])
 const state = reactive({
   name: props.recipe.name,
   notes: props.recipe.notes,
-  ingredients: props.recipe.ingredients,//.map((ingredient) => { return ingredient.ingredient_text} ),
-  instructions: props.recipe.instructions,//.map((instruction) => { return instruction.instruction_text }),
+  ingredients: props.recipe.ingredients.length > 0 ? props.recipe.ingredients : [new IngredientModel()],
+  instructions: props.recipe.instructions.length > 0 ? props.recipe.instructions : [new InstructionModel()],
   category: props.recipe.category_id,
 });
 

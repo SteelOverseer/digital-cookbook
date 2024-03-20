@@ -223,16 +223,20 @@ const onNewRecipeSaved = (recipe:RecipeModel) => {
 }
 
 const onRecipeSelected = async (recipe:RecipeModel) => {
-  recipe.ingredients = await getRecipeIngredients(recipe.id)
-  recipe.instructions = await getRecipeInstructions(recipe.id)
-  state.editRecipe = false
-  state.selectedRecipe = recipe
-  state.currentComponent = Recipe
+    Promise.all([await getRecipeIngredients(recipe.id), await getRecipeInstructions(recipe.id)])
+      .then((data) => {
+        recipe.ingredients = data[0]
+        recipe.instructions = data[1]
+        state.editRecipe = false
+        state.selectedRecipe = recipe
+        state.currentComponent = Recipe
+      })
 }
 
 const getRecipeIngredients = async (recipe_id:string) => {
   try {
     const ingredientsResponse = await IngredientService.getRecipeIngredients(recipe_id);
+    console.log("ingred resp", ingredientsResponse)
     return ingredientsResponse.data
   } catch (error) {
       console.log("ERROR", error.response.data)
@@ -295,7 +299,7 @@ const fetchData = async () => {
 const createCategory = async () => {
     try {
       const createCategoryResponse = await CategoryService.createCategory(state.newCategoryName)
-      const newCategory = createCategoryResponse.data.category
+      const newCategory = createCategoryResponse.data
       state.categories.push(newCategory)
       state.accordianData.push(
         {
