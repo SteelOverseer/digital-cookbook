@@ -32,9 +32,11 @@
     <v-row>
       <v-col>
         <h3>Instructions</h3>
-        <div v-for="instruction in recipe.instructions" :key="instruction.id">
-          {{ instruction.instruction_text }}
-        </div>
+        <ol style="margin-left: 15px;">
+          <li v-for="instruction in recipe.instructions" :key="instruction.id">
+            {{ instruction.instruction_text }}
+          </li>
+        </ol>
       </v-col>
     </v-row>
   </v-container>
