@@ -52,6 +52,7 @@
             @cancelEdit="cancelEdit()"
             @toggleFavorite="toggleFavorite()"
             @selectRecipe="onRecipeSelected($event)"
+            @addIngredientsToShoppingList="updateShoppingList()"
           />
       </v-col>
     </v-row>
@@ -146,7 +147,8 @@ const state = reactive({
   newCategoryName: "",
   selectedRecipe: new RecipeModel(),
   currentComponent: Home,
-  editRecipe: false
+  editRecipe: false,
+  shoppingList: ''
 });
 
 // const accordianData = computed(() => {
@@ -165,6 +167,12 @@ const state = reactive({
 //   return data;
 // })
 
+const updateShoppingList = () => {
+  state.selectedRecipe.ingredients.forEach((ingredient) => {
+    state.shoppingList += (ingredient.ingredient_text + "\n")
+  })
+}
+
 const favoriteRecipes = computed(() => {
   return state.recipes.filter((recipe) => {return recipe.is_favorite})
 })
@@ -180,7 +188,8 @@ const currentProps = computed(() => {
     return { recipe: state.selectedRecipe }
   } else if (state.currentComponent.__name == 'Home') {
     return {
-      recipes: favoriteRecipes.value
+      recipes: favoriteRecipes.value,
+      shoppingList: state.shoppingList
     }
   }
 })
