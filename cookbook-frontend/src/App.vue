@@ -203,6 +203,7 @@ const toggleFavorite = async () => {
 
 const cancelEdit = () => {
   state.editRecipe = false
+  onNewRecipeSaved(state.selectedRecipe)
   state.currentComponent = Recipe
 }
 

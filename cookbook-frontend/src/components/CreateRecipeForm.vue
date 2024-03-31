@@ -22,32 +22,47 @@
               <div id="ingredients">
                 <div id="ingredients-header">
                   <h3>Ingredients</h3>
-                  <v-btn variant="tonal" @click="state.ingredients.push(new IngredientModel())">New Ingredient</v-btn>
+                  <v-tooltip text="New Ingredient">
+                    <template v-slot:activator="{ props }">
+                      <v-btn variant="tonal" @click="state.ingredients.push(new IngredientModel())" v-bind="props">
+                        <v-icon icon="mdi-plus" />
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
                 </div>
                 <div 
                   v-for="(ingredient, index) in state.ingredients" 
                   class="ingredient-row" 
-                  :class="state.deleteIngredients.includes(ingredient.id) ? 'remove' : ''"
-                >
+                  >
                   <v-text-field
                     v-model="state.ingredients[index].ingredient_text"
                     clearable 
                     label="Ingredient"
-                  ></v-text-field>
-                  <v-btn 
-                    v-if="$props.isEdit && ingredient.id != '' && !state.deleteIngredients.includes(ingredient.id)"
-                    class="delete-button"
-                    @click="state.deleteIngredients.push(ingredient.id)"
+                    :class="state.deleteIngredients.includes(ingredient.id) ? 'remove' : ''"
                   >
-                    <v-icon icon="mdi-trash-can-outline" />
-                  </v-btn>
-                  <v-btn
-                    v-else-if="$props.isEdit && ingredient.id != '' && state.deleteIngredients.includes(ingredient.id)"
-                    class="delete-button"
-                    @click="state.deleteIngredients.splice(state.deleteIngredients.indexOf(ingredient.id), 1)"
-                  >
-                    <v-icon icon="mdi-cancel" />
-                  </v-btn>
+                  </v-text-field>
+                  <v-tooltip text="Remove ingredient" v-if="$props.isEdit && ingredient.id != '' && !state.deleteIngredients.includes(ingredient.id)">
+                    <template v-slot:activator="{ props }">
+                      <v-btn 
+                        class="delete-button"
+                        @click="state.deleteIngredients.push(ingredient.id)"
+                        v-bind:="props"
+                      >
+                        <v-icon icon="mdi-trash-can-outline" />
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip text="Cancel" v-if="$props.isEdit && ingredient.id != '' && state.deleteIngredients.includes(ingredient.id)">
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        class="delete-button"
+                        @click="state.deleteIngredients.splice(state.deleteIngredients.indexOf(ingredient.id), 1)"
+                        v-bind="props"
+                      >
+                        <v-icon icon="mdi-cancel" />
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
                 </div>
               </div>
             </v-col>
@@ -57,41 +72,53 @@
                 id="instructions-list"
                 item-key="element"
               >
-                <template #item="{element, index}">
-                  <div 
-                    class="drag-item"
-                    :class="state.deleteInstructions.includes(element.id) ? 'remove' : ''"
-                  >
-                    <v-text-field
-                      v-model="state.instructions[index].instruction_text"
-                      label="Instruction"
-                    ></v-text-field>
-                    <v-btn 
-                      v-if="$props.isEdit && element.id != '' && !state.deleteInstructions.includes(element.id)" 
-                      class="delete-button"
-                      @click="state.deleteInstructions.push(element.id)"
-                    >
-                      <v-icon icon="mdi-trash-can-outline" />
-                    </v-btn>
-                    <v-btn 
-                      v-if="$props.isEdit && element.id != '' && state.deleteInstructions.includes(element.id)" 
-                      class="delete-button"
-                      @click="state.deleteInstructions.splice(state.deleteInstructions.indexOf(element.id), 1)"
-                    >
-                      <v-icon icon="mdi-cancel" />
-                    </v-btn>
-                  </div>
-                </template>
                 <template #header>
                   <div id="instructions-header">
                     <h3>Instructions</h3>
-                    <v-btn
-                      variant="tonal"
-                      id="add-instruction-button" 
-                      @click="state.instructions.push(new InstructionModel())"
+                    <v-tooltip text="New Instruction">
+                      <template v-slot:activator="{ props }">
+                        <v-btn
+                          variant="tonal"
+                          id="add-instruction-button" 
+                          @click="state.instructions.push(new InstructionModel())"
+                          v-bind="props"
+                        >
+                          <v-icon icon="mdi-plus" />
+                        </v-btn>
+                      </template>
+                    </v-tooltip>
+                  </div>
+                </template>
+                <template #item="{element, index}">
+                  <div class="drag-item">
+                    <v-text-field
+                      v-model="state.instructions[index].instruction_text"
+                      label="Instruction"
+                      :class="state.deleteInstructions.includes(element.id) ? 'remove' : ''"
                     >
-                      New Instruction
-                    </v-btn>
+                    </v-text-field>
+                    <v-tooltip text="Remove instruction" v-if="$props.isEdit && element.id != '' && !state.deleteInstructions.includes(element.id)" >
+                      <template v-slot:activator="{ props }">
+                        <v-btn 
+                          class="delete-button"
+                          @click="state.deleteInstructions.push(element.id)"
+                          v-bind="props"
+                        >
+                          <v-icon icon="mdi-trash-can-outline" />
+                        </v-btn>
+                      </template>
+                    </v-tooltip>
+                    <v-tooltip text="Cancel" v-if="$props.isEdit && element.id != '' && state.deleteInstructions.includes(element.id)" >
+                      <template v-slot:activator="{ props }">
+                        <v-btn 
+                          class="delete-button"
+                          @click="state.deleteInstructions.splice(state.deleteInstructions.indexOf(element.id), 1)"
+                          v-bind="props"
+                        >
+                          <v-icon icon="mdi-cancel" />
+                        </v-btn>
+                      </template>
+                    </v-tooltip>
                   </div>
                 </template>
               </draggable>
@@ -315,7 +342,12 @@ const submit = async () => {
   background-color: lightcoral;
 }
 
+.delete-button {
+  margin-top: 10px;
+}
+
 .remove {
-  background-color: yellow;
+  color: red;
+  text-decoration: line-through;
 }
 </style>
