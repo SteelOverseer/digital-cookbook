@@ -236,7 +236,6 @@ const onRecipeSelected = async (recipe:RecipeModel) => {
 const getRecipeIngredients = async (recipe_id:string) => {
   try {
     const ingredientsResponse = await IngredientService.getRecipeIngredients(recipe_id);
-    console.log("ingred resp", ingredientsResponse)
     return ingredientsResponse.data
   } catch (error) {
       console.log("ERROR", error.response.data)
@@ -255,6 +254,7 @@ const getRecipeInstructions = async (recipe_id:string) => {
 }
 
 const getCategories = async () => {
+  state.categories = []
   try {
     const categoriesResponse = await CategoryService.getAll();
     if(categoriesResponse.status == 200) {
@@ -267,6 +267,7 @@ const getCategories = async () => {
 }
 
 const getRecipes = async () => {
+  state.recipes = []
   try {
     const response = await RecipeService.getAll();
     if(response.status == 200) {

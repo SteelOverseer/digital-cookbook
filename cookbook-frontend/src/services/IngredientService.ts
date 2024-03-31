@@ -15,6 +15,10 @@ class IngredientService {
 	updateIngredient(updateIngredientRequest: IngredientModel): Promise<ResponseModel> {
 		return http.patch(`/ingredient/${updateIngredientRequest.id}`, updateIngredientRequest)
 	}
+
+	deleteIngredient(ingredient_id:string):Promise<ResponseModel> {
+		return http.delete(`/ingredient/${ingredient_id}`)
+	}
 }
 
 export default new IngredientService();

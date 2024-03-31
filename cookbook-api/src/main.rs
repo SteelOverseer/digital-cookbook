@@ -28,6 +28,7 @@ use cookbook_api::routes::{
     remove_tag,
     get_ingredients_for_recipe,
     edit_ingredient,
+    delete_ingredient
 };
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
@@ -98,6 +99,7 @@ async fn main() -> std::io::Result<()> {
             .route("api/ingredient", web::post().to(create_ingredient))
             .route("api/ingredient/{recipe_id}", web::get().to(get_ingredients_for_recipe))
             .route("api/ingredient/{id}", web::patch().to(edit_ingredient))
+            .route("api/ingredient/{id}", web::delete().to(delete_ingredient))
     })
     .bind(("127.0.0.1", 8000))?
     .run()

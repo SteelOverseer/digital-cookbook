@@ -15,6 +15,10 @@ class InstructionService {
 	updateInstruction(updateInstructionRequest: InstructionModel): Promise<ResponseModel> {
 		return http.patch(`/instruction/${updateInstructionRequest.id}`, updateInstructionRequest)
 	}
+
+	deleteInstruction(instruction_id: string): Promise<ResponseModel> {
+		return http.delete(`/instruction/${instruction_id}`)
+	}
 }
 
 export default new InstructionService();

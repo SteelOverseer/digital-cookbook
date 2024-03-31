@@ -24,12 +24,30 @@
                   <h3>Ingredients</h3>
                   <v-btn variant="tonal" @click="state.ingredients.push(new IngredientModel())">New Ingredient</v-btn>
                 </div>
-                <div v-for="(ingredient, index) in state.ingredients" class="ingredient-row">
+                <div 
+                  v-for="(ingredient, index) in state.ingredients" 
+                  class="ingredient-row" 
+                  :class="state.deleteIngredients.includes(ingredient.id) ? 'remove' : ''"
+                >
                   <v-text-field
                     v-model="state.ingredients[index].ingredient_text"
                     clearable 
                     label="Ingredient"
                   ></v-text-field>
+                  <v-btn 
+                    v-if="$props.isEdit && ingredient.id != '' && !state.deleteIngredients.includes(ingredient.id)"
+                    class="delete-button"
+                    @click="state.deleteIngredients.push(ingredient.id)"
+                  >
+                    <v-icon icon="mdi-trash-can-outline" />
+                  </v-btn>
+                  <v-btn
+                    v-else-if="$props.isEdit && ingredient.id != '' && state.deleteIngredients.includes(ingredient.id)"
+                    class="delete-button"
+                    @click="state.deleteIngredients.splice(state.deleteIngredients.indexOf(ingredient.id), 1)"
+                  >
+                    <v-icon icon="mdi-cancel" />
+                  </v-btn>
                 </div>
               </div>
             </v-col>
@@ -40,11 +58,28 @@
                 item-key="element"
               >
                 <template #item="{element, index}">
-                  <div class="drag-item">
+                  <div 
+                    class="drag-item"
+                    :class="state.deleteInstructions.includes(element.id) ? 'remove' : ''"
+                  >
                     <v-text-field
                       v-model="state.instructions[index].instruction_text"
                       label="Instruction"
                     ></v-text-field>
+                    <v-btn 
+                      v-if="$props.isEdit && element.id != '' && !state.deleteInstructions.includes(element.id)" 
+                      class="delete-button"
+                      @click="state.deleteInstructions.push(element.id)"
+                    >
+                      <v-icon icon="mdi-trash-can-outline" />
+                    </v-btn>
+                    <v-btn 
+                      v-if="$props.isEdit && element.id != '' && state.deleteInstructions.includes(element.id)" 
+                      class="delete-button"
+                      @click="state.deleteInstructions.splice(state.deleteInstructions.indexOf(element.id), 1)"
+                    >
+                      <v-icon icon="mdi-cancel" />
+                    </v-btn>
                   </div>
                 </template>
                 <template #header>
@@ -123,6 +158,8 @@ const state = reactive({
   ingredients: props.recipe.ingredients.length > 0 ? props.recipe.ingredients : [new IngredientModel()],
   instructions: props.recipe.instructions.length > 0 ? props.recipe.instructions : [new InstructionModel()],
   category: props.recipe.category_id,
+  deleteInstructions: [],
+  deleteIngredients: []
 });
 
 const clear = () => {
@@ -149,27 +186,57 @@ const submit = async () => {
 
       Promise.all(state.ingredients.map(async ingredient => {
         if(ingredient != null && ingredient.ingredient_text != "" && ingredient.ingredient_text != " ") {
-          let updateIngredientReq:IngredientModel = {
-            id: ingredient.id,
-            recipe_id: recipe.id,
-            ingredient_text: ingredient.ingredient_text
+          if(ingredient.id == "") {
+            let createIngredientReq:CreateIngredientModel = {
+              recipe_id: recipe.id,
+              ingredient_text: ingredient.ingredient_text
+            }
+            
+            await IngredientService.createIngredient(createIngredientReq);
+          } else {
+            let updateIngredientReq:IngredientModel = {
+              id: ingredient.id,
+              recipe_id: recipe.id,
+              ingredient_text: ingredient.ingredient_text
+            }
+            
+            await IngredientService.updateIngredient(updateIngredientReq);
           }
-          
-          await IngredientService.updateIngredient(updateIngredientReq);
         }
       }));
   
       Promise.all(state.instructions.map(async (instruction, index) => {
         if(instruction != null && instruction.instruction_text != "" && instruction.instruction_text != " ") {
-          let updateInstructionReq:InstructionModel = {
-            id: instruction.id,
-            instruction_text: instruction.instruction_text,
-            recipe_id: recipe.id,
-            step_order: index
+          if(instruction.id == "") {
+            let createInstructionReq:CreateInstructionModel = {
+              instruction_text: instruction.instruction_text,
+              recipe_id: recipe.id,
+              step_order: index
+            }
+            await InstructionService.createInstruction(createInstructionReq)
+          } else {
+            let updateInstructionReq:InstructionModel = {
+              id: instruction.id,
+              instruction_text: instruction.instruction_text,
+              recipe_id: recipe.id,
+              step_order: index
+            }
+            await InstructionService.updateInstruction(updateInstructionReq)
           }
-          await InstructionService.updateInstruction(updateInstructionReq)
         }
       }))
+
+      if(state.deleteIngredients.length > 0) {
+        Promise.all(state.deleteIngredients.map(async id => {
+          await IngredientService.deleteIngredient(id)
+        }))
+      }
+
+      if(state.deleteInstructions.length > 0) {
+        Promise.all(state.deleteInstructions.map(async id => {
+          await InstructionService.deleteInstruction(id)
+        }))
+      }
     } else {
       const request:CreateRecipeModel =  {
         name: state.name,
@@ -244,11 +311,11 @@ const submit = async () => {
   background-color: lightgreen;
 }
 
-#clear-button, #cancel-button {
+#clear-button, #cancel-button, .delete-button {
   background-color: lightcoral;
 }
 
-#add-instruction-button {
-
+.remove {
+  background-color: yellow;
 }
 </style>
