@@ -28,10 +28,6 @@ defineEmits(["selectRecipe"]);
 </script>
 
 <style scoped>
-#categories-accordian {
-  /* width: 300px; */
-}
-
 .expansion-title, .expansion-item {
   background-color: #f6eee3;
 }

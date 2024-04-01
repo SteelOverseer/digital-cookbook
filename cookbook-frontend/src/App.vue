@@ -30,17 +30,33 @@
             </v-col>
           </v-row>
         </div>
-        <div
-        id="recipe-search"
+        <div 
+          id="recipe-search"
+          style="padding: 5px"
         >
           <v-text-field
             label="Search Recipes"
             prepend-icon="mdi-magnify"
+            v-model="state.search"
+            clearable
           >
           </v-text-field>
-
+          <v-list
+            style="background-color: #f6eee3; border-radius: 5px;"
+            v-if="state.search != null && state.search != ''"
+          >
+            <v-list-item
+              v-for="recipe in filteredRecipes"
+              :key="recipe.id"
+              :title="recipe.name"
+              @click="onRecipeSelected(recipe)"
+            ></v-list-item>
+          </v-list>
         </div>
-        <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
+        <Categories 
+          :data="state.accordianData" 
+          @select-recipe="(recipe) => onRecipeSelected(recipe)" 
+        />
       </v-col>
       <v-col>
           <component 
@@ -149,24 +165,22 @@ const state = reactive({
   selectedRecipe: new RecipeModel(),
   currentComponent: Home,
   editRecipe: false,
-  shoppingList: ''
+  shoppingList: '',
+  search: null
 });
 
-// const accordianData = computed(() => {
-//   const data = [];
-//   state.categories.forEach(category => {
-//     var recipes = state.recipes.filter((recipe) => { return recipe.category_id == category.id})
-//     data.push(
-//       {
-//         ...category,
-//         recipes: recipes
-//       }
-      
-//     )
-//   });
-
-//   return data;
-// })
+const filteredRecipes = computed(() => {
+    if (state.search) {
+      return state.recipes.filter((recipe) => {
+        return state.search
+          .toLowerCase()
+          .split(" ")
+          .every((v) => recipe.name.toLowerCase().includes(v))
+      });
+    } else {
+        return state.recipes;
+    }
+});
 
 const refresh = () => {
   window.location.reload();
@@ -345,7 +359,6 @@ fetchData();
 
 <style scoped>
 #app-container {
-  /* border: 1px solid black; */
   #header {
     text-align: center;
   }
@@ -366,7 +379,6 @@ fetchData();
 
     #recipe-search {
       background-color: #f6eee3;
-      height: 55px;
       margin-top: 10px;
       margin-bottom: 10px;
       border-radius: 5px;
