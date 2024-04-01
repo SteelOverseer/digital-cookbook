@@ -10,7 +10,13 @@
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </v-toolbar>
-        <h1 class="hidden-sm-and-down" style="cursor: pointer;" @click="state.currentComponent = Home">Schultz Family Cookbook</h1>
+        <h1
+          id="desktop-header"
+          class="hidden-sm-and-down" 
+          @click="state.currentComponent = Home"
+        >
+          Schultz Family Cookbook
+        </h1>
       </v-col>
     </v-row>
     <v-row no-gutters>
@@ -361,6 +367,19 @@ fetchData();
 #app-container {
   #header {
     text-align: center;
+    
+    #desktop-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer; 
+      background-color: #f6eee3;
+      margin-bottom: 10px;
+      height: 125px;
+      font-family: 'dobkinplain';
+      color: #333;
+      font-size: 90px;
+    }
   }
 
   #action-column {
