@@ -317,10 +317,6 @@ const submit = async () => {
   flex-direction: row;
 }
 
-#instructions-list {
-  
-}
-
 #instructions-header, #ingredients-header {
   display: flex;
   flex-direction: row;

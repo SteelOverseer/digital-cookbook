@@ -6,9 +6,11 @@
         @selectRecipe="$emit('selectRecipe', $event)"
       />
     </v-col>
-    <v-col>
+    <v-col class="hidden-sm-and-down">
       <ShoppingList
         :shoppingList="shoppingList"
+        @updateShoppingList="$emit('updateShoppingList', $event)"
+        @clearShoppingList="$emit('clearShoppingList')"
       />
     </v-col>
   </v-row>

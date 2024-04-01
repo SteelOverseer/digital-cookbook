@@ -3,8 +3,8 @@
     <v-row no-gutters id="header">
       <v-col>
         <v-toolbar class="hidden-md-and-up">
-          <v-app-bar-nav-icon></v-app-bar-nav-icon>
-          <v-toolbar-title >Schultz Family Cookbook</v-toolbar-title>
+          <v-app-bar-nav-icon />
+          <v-toolbar-title @click="state.currentComponent = Home">Schultz Family Cookbook</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon>
             <v-icon>mdi-magnify</v-icon>
@@ -19,7 +19,6 @@
         sm="2"
         class="hidden-sm-and-down"
         id="action-column"
-        style="border: 1px solid black;"
       >
         <div id="action-buttons">
           <v-row>
@@ -31,17 +30,17 @@
             </v-col>
           </v-row>
         </div>
-          <!-- <v-text-field
-            id="recipe-search"
+        <div
+        id="recipe-search"
+        >
+          <v-text-field
             label="Search Recipes"
+            prepend-icon="mdi-magnify"
           >
-            <template v-slot:prepend>
-              <v-icon>
-                mdi-magnify
-              </v-icon>
-            </template>
-          </v-text-field> -->
-          <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
+          </v-text-field>
+
+        </div>
+        <Categories :data="state.accordianData" @select-recipe="(recipe) => onRecipeSelected(recipe)" />
       </v-col>
       <v-col>
           <component 
@@ -53,6 +52,8 @@
             @toggleFavorite="toggleFavorite()"
             @selectRecipe="onRecipeSelected($event)"
             @addIngredientsToShoppingList="updateShoppingList()"
+            @updateShoppingList="state.shoppingList = $event"
+            @clearShoppingList="state.shoppingList = ''; refresh();"
           />
       </v-col>
     </v-row>
@@ -167,6 +168,10 @@ const state = reactive({
 //   return data;
 // })
 
+const refresh = () => {
+  window.location.reload();
+}
+
 const updateShoppingList = () => {
   state.selectedRecipe.ingredients.forEach((ingredient) => {
     state.shoppingList += (ingredient.ingredient_text + "\n")
@@ -189,6 +194,14 @@ const currentProps = computed(() => {
   } else if (state.currentComponent.__name == 'Home') {
     return {
       recipes: favoriteRecipes.value,
+      shoppingList: state.shoppingList
+    }
+  } else if (state.currentComponent.__name == 'Favorites') {
+    return {
+      recipes: favoriteRecipes.value,
+    }
+  } else if (state.currentComponent.__name == 'ShoppingList') {
+    return {
       shoppingList: state.shoppingList
     }
   }
@@ -352,8 +365,11 @@ fetchData();
     }
 
     #recipe-search {
-      border: 1px solid black;
       background-color: #f6eee3;
+      height: 55px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
     }
   }
 
