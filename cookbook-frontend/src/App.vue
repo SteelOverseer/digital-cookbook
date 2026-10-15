@@ -68,7 +68,7 @@
           <component 
             :is="state.currentComponent"
             v-bind="currentProps"
-            @saved="(recipe) => onNewRecipeSaved(recipe)"
+            @saved="(recipe: RecipeModel) => onNewRecipeSaved(recipe)"
             @editRecipe="onEditRecipe()"
             @cancelEdit="cancelEdit()"
             @toggleFavorite="toggleFavorite()"
@@ -148,7 +148,7 @@
 import Home from './components/Home.vue'
 import Categories from './components/Categories.vue'
 import CreateRecipeForm from './components/CreateRecipeForm.vue'
-import { computed, onErrorCaptured, reactive } from 'vue';
+import { computed, onErrorCaptured, reactive, type Component } from 'vue';
 import CategoryService from './services/CategoryService';
 import CategoryModel from './models/Category/CategoryModel';
 import RecipeService from './services/RecipeService';
@@ -169,16 +169,17 @@ const state = reactive({
   showNewRecipeDialog: false,
   newCategoryName: "",
   selectedRecipe: new RecipeModel(),
-  currentComponent: Home,
+  currentComponent: Home as Component,
   editRecipe: false,
   shoppingList: '',
-  search: null
+  search: null as string | null
 });
 
 const filteredRecipes = computed(() => {
-    if (state.search) {
+    const search = state.search
+    if (search) {
       return state.recipes.filter((recipe) => {
-        return state.search
+        return search
           .toLowerCase()
           .split(" ")
           .every((v) => recipe.name.toLowerCase().includes(v))
@@ -203,24 +204,24 @@ const favoriteRecipes = computed(() => {
 })
 
 const currentProps = computed(() => {
-  if(state.currentComponent.__name == 'CreateRecipeForm') {
+  if((state.currentComponent as any).__name == 'CreateRecipeForm') {
     return { 
       categories: state.categories,
       recipe: state.selectedRecipe,
       isEdit: state.editRecipe
     }
-  } else if (state.currentComponent.__name == 'Recipe') {
+  } else if ((state.currentComponent as any).__name == 'Recipe') {
     return { recipe: state.selectedRecipe }
-  } else if (state.currentComponent.__name == 'Home') {
+  } else if ((state.currentComponent as any).__name == 'Home') {
     return {
       recipes: favoriteRecipes.value,
       shoppingList: state.shoppingList
     }
-  } else if (state.currentComponent.__name == 'Favorites') {
+  } else if ((state.currentComponent as any).__name == 'Favorites') {
     return {
       recipes: favoriteRecipes.value,
     }
-  } else if (state.currentComponent.__name == 'ShoppingList') {
+  } else if ((state.currentComponent as any).__name == 'ShoppingList') {
     return {
       shoppingList: state.shoppingList
     }
@@ -236,8 +237,10 @@ const toggleFavorite = async () => {
     const updateRecipe = resp.data;
     state.selectedRecipe.is_favorite = updateRecipe.is_favorite
     let recipe = state.recipes.find((recipe) => {return recipe.id == updateRecipe.id})
-    recipe.is_favorite = updateRecipe.is_favorite
-  } catch (error) {
+    if (recipe) {
+      recipe.is_favorite = updateRecipe.is_favorite
+    }
+  } catch (error: any) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
   }
@@ -280,7 +283,7 @@ const getRecipeIngredients = async (recipe_id:string) => {
   try {
     const ingredientsResponse = await IngredientService.getRecipeIngredients(recipe_id);
     return ingredientsResponse.data
-  } catch (error) {
+  } catch (error: any) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
   }
@@ -290,7 +293,7 @@ const getRecipeInstructions = async (recipe_id:string) => {
   try {
     const instructionsResponse = await InstructionService.getRecipeInstructions(recipe_id)
     return instructionsResponse.data;
-  } catch (error) {
+  } catch (error: any) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
   }
@@ -303,7 +306,7 @@ const getCategories = async () => {
     if(categoriesResponse.status == 200) {
         state.categories = categoriesResponse.data
     }
-  } catch (error) {
+  } catch (error: any) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
   }
@@ -316,7 +319,7 @@ const getRecipes = async () => {
     if(response.status == 200) {
         state.recipes = response.data
     }
-  } catch (error) {
+  } catch (error: any) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
   }
@@ -351,7 +354,7 @@ const createCategory = async () => {
           recipes: []
         }
       )
-    } catch (error) {
+    } catch (error: any) {
       console.log("ERROR", error.response.data.message)
       throw(new Error(error.response.data.message))
     }

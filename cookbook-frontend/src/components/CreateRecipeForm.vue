@@ -173,7 +173,7 @@ import IngredientModel from '../models/Ingredient/IngredientModel';
 import InstructionModel from '../models/Instruction/InstructionModel';
 
 const props = defineProps<{
-  categories: CategoryModel,
+  categories: CategoryModel[],
   recipe: RecipeModel,
   isEdit: boolean
 }>()
@@ -185,8 +185,8 @@ const state = reactive({
   ingredients: props.recipe.ingredients.length > 0 ? props.recipe.ingredients : [new IngredientModel()],
   instructions: props.recipe.instructions.length > 0 ? props.recipe.instructions : [new InstructionModel()],
   category: props.recipe.category_id,
-  deleteInstructions: [],
-  deleteIngredients: []
+  deleteInstructions: [] as string[],
+  deleteIngredients: [] as string[]
 });
 
 const clear = () => {
@@ -300,7 +300,7 @@ const submit = async () => {
     
     emit("saved", recipe);
 
-  } catch (error) {
+  } catch (error: any) {
       console.log("ERROR", error.response.data)
       throw(new Error(error.response.data))
   }
