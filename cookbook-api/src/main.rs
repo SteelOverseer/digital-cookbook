@@ -30,7 +30,7 @@ use cookbook_api::routes::{
     edit_ingredient,
     delete_ingredient
 };
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use sqlx::postgres::PgPoolOptions;
 
 #[actix_web::main]
