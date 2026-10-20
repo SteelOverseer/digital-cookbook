@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import '@fontsource/satisfy'
 import './style.css'
 import App from './App.vue'
 
@@ -10,6 +11,9 @@ import * as directives from 'vuetify/directives'
 const vuetify = createVuetify({
   components,
   directives,
+  theme: {
+    defaultTheme: 'light',
+  },
 })
 
 createApp(App)

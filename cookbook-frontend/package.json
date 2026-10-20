@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/satisfy": "^5.3.0",
     "axios": "^1.20.0",
     "vue": "^3.5.44",
     "vuedraggable": "^4.1.0",

@@ -1,12 +1,12 @@
 <template>
   <v-row>
-    <v-col>
+    <v-col cols="12" lg="6">
       <FavoriteRecipes 
         :recipes="recipes"
         @selectRecipe="$emit('selectRecipe', $event)"
       />
     </v-col>
-    <v-col class="hidden-sm-and-down">
+    <v-col cols="12" lg="6" class="hidden-sm-and-down">
       <ShoppingList
         :shoppingList="shoppingList"
         @updateShoppingList="$emit('updateShoppingList', $event)"

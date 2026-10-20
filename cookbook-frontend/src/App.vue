@@ -21,17 +21,18 @@
     </v-row>
     <v-row no-gutters>
       <v-col 
-        cols="3" 
-        sm="2"
+        cols="4"
+        lg="3"
+        xl="2"
         class="hidden-sm-and-down"
         id="action-column"
       >
         <div id="action-buttons">
           <v-row>
-            <v-col>
+            <v-col cols="12" xl="6">
               <v-btn @click="state.showNewCategoryDialog = true">New Category</v-btn>
             </v-col>
-            <v-col>
+            <v-col cols="12" xl="6">
               <v-btn @click="state.selectedRecipe = new RecipeModel(); state.currentComponent = CreateRecipeForm;">New Recipe</v-btn>
             </v-col>
           </v-row>
@@ -64,7 +65,7 @@
           @select-recipe="(recipe) => onRecipeSelected(recipe)" 
         />
       </v-col>
-      <v-col>
+      <v-col id="main-column">
           <component 
             :is="state.currentComponent"
             v-bind="currentProps"
@@ -379,10 +380,16 @@ fetchData();
       background-color: #f6eee3;
       margin-bottom: 10px;
       height: 125px;
-      font-family: 'dobkinplain';
+      font-family: 'Satisfy', cursive;
       color: #333;
-      font-size: 90px;
+      font-size: clamp(32px, 6.5vw, 90px);
+      line-height: 1;
+      white-space: nowrap;
     }
+  }
+
+  #main-column {
+    min-width: 0;
   }
 
   #action-column {
@@ -394,6 +401,7 @@ fetchData();
       justify-content: space-between;
   
       button {
+        white-space: normal;
         width: -webkit-fill-available;
         background-color: #f6eee3;
       }
