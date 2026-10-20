@@ -1,9 +1,10 @@
 <template>
-  <v-container id="shopping-list">
+  <v-container fluid id="shopping-list">
     <h2>Shopping List</h2>
     <v-textarea
       v-model="list"
-      rows="15"
+      rows="6"
+      no-resize
     ></v-textarea>
     <div id="shopping-list-footer">
       <v-btn id="update-button" @click="$emit('updateShoppingList', list)">Update</v-btn>
@@ -25,7 +26,20 @@ const list = ref(props.shoppingList)
 <style scoped>
 #shopping-list {
   background-color: #f6eee3;
-  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  :deep(.v-textarea) {
+    flex: 1;
+  }
+
+  :deep(.v-textarea .v-input__control),
+  :deep(.v-textarea .v-field),
+  :deep(.v-textarea .v-field__field),
+  :deep(.v-textarea textarea) {
+    height: 100%;
+  }
 
   #shopping-list-footer {
     display: flex;

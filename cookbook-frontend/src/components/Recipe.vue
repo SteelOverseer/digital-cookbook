@@ -1,5 +1,5 @@
 <template>
-  <v-container id="view-recipe-form">
+  <v-container fluid id="view-recipe-form">
     <v-row id="recipe-header">
       <div id="name-panel">
         <h2>{{ recipe.name }}</h2>

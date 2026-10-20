@@ -1,18 +1,18 @@
 <template>
-  <v-row>
-    <v-col cols="12" lg="6">
+  <v-row no-gutters>
+    <v-col cols="12" lg="6" class="home-left">
       <FavoriteRecipes 
         :recipes="recipes"
         @selectRecipe="$emit('selectRecipe', $event)"
       />
     </v-col>
-    <v-col cols="12" lg="6" class="hidden-sm-and-down">
+    <!-- <v-col cols="12" lg="6" class="hidden-sm-and-down home-right">
       <ShoppingList
         :shoppingList="shoppingList"
         @updateShoppingList="$emit('updateShoppingList', $event)"
         @clearShoppingList="$emit('clearShoppingList')"
       />
-    </v-col>
+    </v-col> -->
   </v-row>
 </template>
 
@@ -28,5 +28,24 @@ defineProps<{
 </script>
 
 <style scoped>
+.home-right {
+  display: flex;
+  flex-direction: column;
+}
 
+.home-left {
+  border-bottom: var(--divider) solid var(--cookbook-blue);
+}
+
+@media (min-width: 1145px) {
+  .home-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-left {
+    border-bottom: 0;
+    border-right: var(--divider) solid var(--cookbook-blue);
+  }
+}
 </style>

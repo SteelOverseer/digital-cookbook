@@ -1,5 +1,5 @@
 <template>
-  <v-container id="app-container">
+  <v-container id="app-container" fluid>
     <v-row no-gutters id="header">
       <v-col>
         <v-toolbar class="hidden-md-and-up">
@@ -19,7 +19,7 @@
         </h1>
       </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row no-gutters id="content-row">
       <v-col 
         cols="4"
         lg="3"
@@ -66,19 +66,27 @@
         />
       </v-col>
       <v-col id="main-column">
-          <component 
-            :is="state.currentComponent"
-            v-bind="currentProps"
-            @saved="(recipe: RecipeModel) => onNewRecipeSaved(recipe)"
-            @editRecipe="onEditRecipe()"
-            @cancelEdit="cancelEdit()"
-            @toggleFavorite="toggleFavorite()"
-            @selectRecipe="onRecipeSelected($event)"
-            @addIngredientsToShoppingList="updateShoppingList()"
-            @updateShoppingList="state.shoppingList = $event"
-            @clearShoppingList="state.shoppingList = ''; refresh();"
-          />
+        <!-- <component 
+          :is="state.currentComponent"
+          v-bind="currentProps"
+          @saved="(recipe: RecipeModel) => onNewRecipeSaved(recipe)"
+          @editRecipe="onEditRecipe()"
+          @cancelEdit="cancelEdit()"
+          @toggleFavorite="toggleFavorite()"
+          @selectRecipe="onRecipeSelected($event)"
+          @addIngredientsToShoppingList="updateShoppingList()"
+          @updateShoppingList="state.shoppingList = $event"
+          @clearShoppingList="state.shoppingList = ''; refresh();"
+        /> -->
+        Recent Recipe or New Recipe view here
       </v-col>
+      <v-col cols="12" lg="6" class="hidden-sm-and-down home-right">
+        <ShoppingList
+          :shoppingList="state.shoppingList"
+          @updateShoppingList="$emit('updateShoppingList', $event)"
+          @clearShoppingList="$emit('clearShoppingList')"
+        />
+    </v-col>
     </v-row>
     <v-snackbar
       v-model="state.showToast"
@@ -158,6 +166,7 @@ import Recipe from './components/Recipe.vue'
 import IngredientService from './services/IngredientService';
 import InstructionService from './services/InstructionService';
 import CreateRecipeModel from './models/Recipe/CreateRecipeModel';
+import ShoppingList from './components/ShoppingList.vue';
 
 const state = reactive({
   categories: [] as CategoryModel[],
@@ -369,7 +378,17 @@ fetchData();
 
 <style scoped>
 #app-container {
+  padding: var(--divider);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  #content-row {
+    flex: 1;
+  }
+
   #header {
+    flex: none;
     text-align: center;
     
     #desktop-header {
@@ -378,7 +397,7 @@ fetchData();
       justify-content: center;
       cursor: pointer; 
       background-color: #f6eee3;
-      margin-bottom: 10px;
+      margin: 0 0 var(--divider);
       height: 125px;
       font-family: 'Satisfy', cursive;
       color: #333;
@@ -390,15 +409,24 @@ fetchData();
 
   #main-column {
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    > * {
+      flex: 1 1 auto;
+    }
+    background-color: #f6eee3;
   }
 
   #action-column {
-    margin-right: 10px;
+    margin-right: var(--divider);
+    background-color: #f6eee3;
 
     #action-buttons {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      border-bottom: var(--divider) solid var(--cookbook-blue);
   
       button {
         white-space: normal;
@@ -409,9 +437,7 @@ fetchData();
 
     #recipe-search {
       background-color: #f6eee3;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
+      border-bottom: var(--divider) solid var(--cookbook-blue);
     }
   }
 

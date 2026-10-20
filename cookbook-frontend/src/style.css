@@ -5,7 +5,9 @@
 
   /* color-scheme: light dark; */
   /* color: rgba(255, 255, 255, 0.87); */
-  background-color: #567d9c;
+  --cookbook-blue: #567d9c;
+  --divider: 4px;
+  background-color: var(--cookbook-blue);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

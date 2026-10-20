@@ -1,5 +1,5 @@
 <template>
-  <v-container id="favorite-recipes">
+  <v-container fluid id="favorite-recipes">
     <h2>Favorites</h2>
     <v-list 
       style="background-color: #f6eee3;"
@@ -26,6 +26,5 @@ defineProps<{
 <style scoped>
 #favorite-recipes {
     background-color: #f6eee3;
-    border-radius: 15px;
 }
 </style>

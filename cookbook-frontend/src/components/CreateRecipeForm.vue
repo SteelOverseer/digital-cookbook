@@ -1,5 +1,5 @@
 <template>
-  <v-container id="create-recipe-form">
+  <v-container fluid id="create-recipe-form">
     <v-row no-gutters>
       <h2>{{ props.isEdit ? 'Edit' : 'Create' }} Recipe</h2>
     </v-row>
