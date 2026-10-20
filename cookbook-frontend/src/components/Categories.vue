@@ -45,6 +45,12 @@
           class="favorite-star"
         />
       </v-expansion-panel-text>
+      <v-expansion-panel-text
+        v-if="category.recipes.length == 0"
+        class="expansion-item empty-category"
+      >
+        No recipes in this category yet.
+      </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
 </template>
@@ -65,7 +71,7 @@ defineEmits(["selectRecipe"]);
 .favorite-star {
   color: gold;
 }
-.empty-favorites {
+.empty-favorites, .empty-category {
   cursor: default;
   font-style: italic;
 }

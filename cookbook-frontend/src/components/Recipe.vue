@@ -29,7 +29,7 @@
         <v-tooltip text="Add ingredients to shopping list" >
           <template v-slot:activator="{ props }">
             <v-icon 
-              icon="mdi-playlist-plus" 
+              icon="mdi-cart-plus" 
               style="margin-right: 5px;"
               v-bind="props"
               @click="$emit('addIngredientsToShoppingList')"

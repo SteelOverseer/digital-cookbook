@@ -5,26 +5,49 @@
       v-model="list"
       rows="6"
       no-resize
+      :placeholder="placeholder"
+      persistent-placeholder
     ></v-textarea>
     <div id="shopping-list-footer">
-      <v-btn id="update-button" @click="$emit('updateShoppingList', list)">Update</v-btn>
-      <v-btn id="clear-button" @click="$emit('clearShoppingList')">Clear</v-btn>
+      <v-tooltip text="Download list">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            id="download-button"
+            aria-label="Download list"
+            :disabled="!list.trim()"
+            @click="downloadList"
+          >
+            <v-icon icon="mdi-download" />
+          </v-btn>
+        </template>
+      </v-tooltip>
+      <v-btn id="clear-button" @click="list = ''">Clear</v-btn>
     </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+const list = defineModel<string>({ default: '' })
 
-const props = defineProps<{
-  shoppingList:string
-}>()
+const localDate = () => {
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+}
 
-const list = ref(props.shoppingList)
+const downloadList = () => {
+  const blob = new Blob([list.value], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `ShoppingList-${localDate()}.txt`
+  link.click()
+  URL.revokeObjectURL(url)
+}
 
-watch(() => props.shoppingList, (value) => {
-  list.value = value
-})
+const placeholder =
+  'Type items, one per line, like:\n2 cups flour\n1 dozen eggs\n\nOr use the cart icon on a recipe to add all its ingredients.'
 </script>
 
 <style scoped>
@@ -49,12 +72,12 @@ watch(() => props.shoppingList, (value) => {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+    gap: 10px;
 
-    #update-button {
+    #download-button {
       background-color: lightgreen;
-      margin-right: 10px;
     }
-  
+
     #clear-button {
       background-color: lightcoral;
     }

@@ -27,16 +27,6 @@
         class="hidden-sm-and-down"
         id="action-column"
       >
-        <div id="action-buttons">
-          <v-row>
-            <v-col cols="12" xl="6">
-              <v-btn @click="state.showNewCategoryDialog = true">New Category</v-btn>
-            </v-col>
-            <v-col cols="12" xl="6">
-              <v-btn @click="onNewRecipe()">New Recipe</v-btn>
-            </v-col>
-          </v-row>
-        </div>
         <div 
           id="recipe-search"
           style="padding: 5px"
@@ -46,8 +36,33 @@
             prepend-icon="mdi-magnify"
             v-model="state.search"
             clearable
+            hide-details
           >
           </v-text-field>
+          <div id="search-actions">
+            <v-tooltip text="New category">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="mdi-playlist-plus"
+                  size="small"
+                  aria-label="New category"
+                  @click="state.showNewCategoryDialog = true"
+                />
+              </template>
+            </v-tooltip>
+            <v-tooltip text="New recipe">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="mdi-book-plus"
+                  size="small"
+                  aria-label="New recipe"
+                  @click="onNewRecipe()"
+                />
+              </template>
+            </v-tooltip>
+          </div>
           <v-list
             style="background-color: #f6eee3; border-radius: 5px;"
             v-if="state.search != null && state.search != ''"
@@ -85,9 +100,7 @@
         id="rail-column"
       >
         <ShoppingList
-          :shoppingList="state.shoppingList"
-          @updateShoppingList="state.shoppingList = $event"
-          @clearShoppingList="state.shoppingList = ''; refresh();"
+          v-model="state.shoppingList"
         />
       </v-col>
     </v-row>
@@ -160,7 +173,7 @@
 import Home from './components/Home.vue'
 import Categories from './components/Categories.vue'
 import CreateRecipeForm from './components/CreateRecipeForm.vue'
-import { computed, onErrorCaptured, reactive, type Component } from 'vue';
+import { computed, onErrorCaptured, reactive, watch, type Component } from 'vue';
 import CategoryService from './services/CategoryService';
 import CategoryModel from './models/Category/CategoryModel';
 import RecipeService from './services/RecipeService';
@@ -170,6 +183,16 @@ import IngredientService from './services/IngredientService';
 import InstructionService from './services/InstructionService';
 import CreateRecipeModel from './models/Recipe/CreateRecipeModel';
 import ShoppingList from './components/ShoppingList.vue';
+
+const SHOPPING_LIST_KEY = 'cookbook.shoppingList'
+
+function loadShoppingList(): string {
+  try {
+    return localStorage.getItem(SHOPPING_LIST_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}
 
 const state = reactive({
   categories: [] as CategoryModel[],
@@ -184,9 +207,17 @@ const state = reactive({
   selectedRecipe: new RecipeModel(),
   currentComponent: Home as Component,
   editRecipe: false,
-  shoppingList: '',
+  shoppingList: loadShoppingList(),
   search: null as string | null
 });
+
+watch(() => state.shoppingList, (list) => {
+  try {
+    localStorage.setItem(SHOPPING_LIST_KEY, list)
+  } catch {
+    // storage unavailable; the list just won't survive a reload
+  }
+})
 
 const filteredRecipes = computed(() => {
     const search = state.search
@@ -201,10 +232,6 @@ const filteredRecipes = computed(() => {
         return state.recipes;
     }
 });
-
-const refresh = () => {
-  window.location.reload();
-}
 
 const updateShoppingList = () => {
   state.selectedRecipe.ingredients.forEach((ingredient) => {
@@ -451,22 +478,19 @@ fetchData().then(restoreLastRecipe);
     margin-right: var(--divider);
     background-color: #f6eee3;
 
-    #action-buttons {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      border-bottom: var(--divider) solid var(--cookbook-blue);
-  
-      button {
-        white-space: normal;
-        width: -webkit-fill-available;
-        background-color: #f6eee3;
-      }
-    }
-
     #recipe-search {
       background-color: #f6eee3;
       border-bottom: var(--divider) solid var(--cookbook-blue);
+
+      #search-actions {
+        display: flex;
+        gap: 8px;
+        padding: 8px 0 4px 44px;
+
+        button {
+          background-color: #f6eee3;
+        }
+      }
     }
   }
 
