@@ -14,13 +14,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
   shoppingList:string
 }>()
 
 const list = ref(props.shoppingList)
+
+watch(() => props.shoppingList, (value) => {
+  list.value = value
+})
 </script>
 
 <style scoped>

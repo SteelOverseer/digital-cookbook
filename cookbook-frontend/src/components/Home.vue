@@ -1,51 +1,23 @@
 <template>
-  <v-row no-gutters>
-    <v-col cols="12" lg="6" class="home-left">
-      <FavoriteRecipes 
-        :recipes="recipes"
-        @selectRecipe="$emit('selectRecipe', $event)"
-      />
-    </v-col>
-    <!-- <v-col cols="12" lg="6" class="hidden-sm-and-down home-right">
-      <ShoppingList
-        :shoppingList="shoppingList"
-        @updateShoppingList="$emit('updateShoppingList', $event)"
-        @clearShoppingList="$emit('clearShoppingList')"
-      />
-    </v-col> -->
-  </v-row>
+  <v-container fluid id="welcome">
+    <h2>Welcome to the family cookbook</h2>
+    <p>Pick a recipe from the list on the left, or start a new one.</p>
+    <v-btn id="new-recipe-button" @click="$emit('newRecipe')">New Recipe</v-btn>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import RecipeModel from '../models/Recipe/RecipeModel';
-import FavoriteRecipes from './FavoriteRecipes.vue';
-import ShoppingList from './ShoppingList.vue';
-
-defineProps<{
-  recipes:RecipeModel[],
-  shoppingList:string
-}>()
+defineEmits(['newRecipe'])
 </script>
 
 <style scoped>
-.home-right {
+#welcome {
+  background-color: #f6eee3;
   display: flex;
   flex-direction: column;
-}
-
-.home-left {
-  border-bottom: var(--divider) solid var(--cookbook-blue);
-}
-
-@media (min-width: 1145px) {
-  .home-right {
-  display: flex;
-  flex-direction: column;
-}
-
-.home-left {
-    border-bottom: 0;
-    border-right: var(--divider) solid var(--cookbook-blue);
-  }
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
 }
 </style>

@@ -33,7 +33,7 @@
               <v-btn @click="state.showNewCategoryDialog = true">New Category</v-btn>
             </v-col>
             <v-col cols="12" xl="6">
-              <v-btn @click="state.selectedRecipe = new RecipeModel(); state.currentComponent = CreateRecipeForm;">New Recipe</v-btn>
+              <v-btn @click="onNewRecipe()">New Recipe</v-btn>
             </v-col>
           </v-row>
         </div>
@@ -62,11 +62,12 @@
         </div>
         <Categories 
           :data="state.accordianData" 
+          :favorites="favoriteRecipes"
           @select-recipe="(recipe) => onRecipeSelected(recipe)" 
         />
       </v-col>
       <v-col id="main-column">
-        <!-- <component 
+        <component 
           :is="state.currentComponent"
           v-bind="currentProps"
           @saved="(recipe: RecipeModel) => onNewRecipeSaved(recipe)"
@@ -75,18 +76,20 @@
           @toggleFavorite="toggleFavorite()"
           @selectRecipe="onRecipeSelected($event)"
           @addIngredientsToShoppingList="updateShoppingList()"
-          @updateShoppingList="state.shoppingList = $event"
-          @clearShoppingList="state.shoppingList = ''; refresh();"
-        /> -->
-        Recent Recipe or New Recipe view here
+          @newRecipe="onNewRecipe()"
+        />
       </v-col>
-      <v-col cols="12" lg="6" class="hidden-sm-and-down home-right">
+      <v-col
+        cols="3"
+        class="hidden-md-and-down"
+        id="rail-column"
+      >
         <ShoppingList
           :shoppingList="state.shoppingList"
-          @updateShoppingList="$emit('updateShoppingList', $event)"
-          @clearShoppingList="$emit('clearShoppingList')"
+          @updateShoppingList="state.shoppingList = $event"
+          @clearShoppingList="state.shoppingList = ''; refresh();"
         />
-    </v-col>
+      </v-col>
     </v-row>
     <v-snackbar
       v-model="state.showToast"
@@ -222,19 +225,6 @@ const currentProps = computed(() => {
     }
   } else if ((state.currentComponent as any).__name == 'Recipe') {
     return { recipe: state.selectedRecipe }
-  } else if ((state.currentComponent as any).__name == 'Home') {
-    return {
-      recipes: favoriteRecipes.value,
-      shoppingList: state.shoppingList
-    }
-  } else if ((state.currentComponent as any).__name == 'Favorites') {
-    return {
-      recipes: favoriteRecipes.value,
-    }
-  } else if ((state.currentComponent as any).__name == 'ShoppingList') {
-    return {
-      shoppingList: state.shoppingList
-    }
   }
 })
 
@@ -267,6 +257,12 @@ onErrorCaptured((error) => {
   state.showToast = true;
 })
 
+const onNewRecipe = () => {
+  state.selectedRecipe = new RecipeModel()
+  state.editRecipe = false
+  state.currentComponent = CreateRecipeForm
+}
+
 const onEditRecipe = () => {
   state.editRecipe = true
   state.currentComponent = CreateRecipeForm
@@ -286,7 +282,33 @@ const onRecipeSelected = async (recipe:RecipeModel) => {
         state.editRecipe = false
         state.selectedRecipe = recipe
         state.currentComponent = Recipe
+        rememberRecipe(recipe.id)
       })
+}
+
+const LAST_RECIPE_KEY = 'cookbook.lastRecipeId'
+
+const rememberRecipe = (id: string) => {
+  try {
+    localStorage.setItem(LAST_RECIPE_KEY, id)
+  } catch {
+    // storage unavailable; the welcome view shows next time
+  }
+}
+
+const restoreLastRecipe = () => {
+  try {
+    const id = localStorage.getItem(LAST_RECIPE_KEY)
+    if (!id) return
+    const recipe = state.recipes.find((recipe) => recipe.id == id)
+    if (recipe) {
+      onRecipeSelected(recipe)
+    } else {
+      localStorage.removeItem(LAST_RECIPE_KEY)
+    }
+  } catch {
+    // storage unavailable; stay on the welcome view
+  }
 }
 
 const getRecipeIngredients = async (recipe_id:string) => {
@@ -373,7 +395,7 @@ const createCategory = async () => {
     state.newCategoryName = "";
 }
 
-fetchData();
+fetchData().then(restoreLastRecipe);
 </script>
 
 <style scoped>
@@ -416,6 +438,13 @@ fetchData();
       flex: 1 1 auto;
     }
     background-color: #f6eee3;
+  }
+
+  #rail-column {
+    margin-left: var(--divider);
+    background-color: #f6eee3;
+    display: flex;
+    flex-direction: column;
   }
 
   #action-column {
